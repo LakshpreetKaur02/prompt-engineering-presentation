@@ -1,4 +1,9 @@
 # GenAI Presentation — Prompt Engineering & Multi-Model Workflow
+![Generative AI](https://img.shields.io/badge/Generative%20AI-412991?style=for-the-badge)
+![Prompt Engineering](https://img.shields.io/badge/Prompt%20Engineering-FF6F00?style=for-the-badge)
+![ChatGPT](https://img.shields.io/badge/ChatGPT-74AA9C?style=for-the-badge)
+![Claude](https://img.shields.io/badge/Claude-D97757?style=for-the-badge)
+![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222?style=for-the-badge)
 
 > 🎯 **[View Live Presentation →](https://lakshpreetkaur02.github.io/prompt-engineering-presentation/)**
 
