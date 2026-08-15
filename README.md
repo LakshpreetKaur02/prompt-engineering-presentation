@@ -1,11 +1,12 @@
 # GenAI Presentation — Prompt Engineering & Multi-Model Workflow
 
+> 🎯 **[View Live Presentation →](https://lakshpreetkaur02.github.io/prompt-engineering-presentation/)**
+
 A 15-slide Data Science keynote presentation created with Generative AI, demonstrating AI-assisted content development, visual design, iterative refinement, and multi-model workflow using ChatGPT and Claude.
 
 ## 🚀 Live Presentation
 
-**View the interactive presentation:**  
-https://lakshpreetkaur02.github.io/prompt-engineering-presentation/
+Interactive 15-slide Data Science presentation created using a multi-model Generative AI workflow.
 
 ## 🖼️ Presentation Preview
 
