@@ -78,6 +78,24 @@ The process involved progressively refining:
 
 This demonstrates how prompt engineering can be used as an **iterative problem-solving process**, rather than simply generating a one-time response.
 
+## 🔄 AI-Assisted Workflow
+
+```text
+Presentation Concept
+        ↓
+AI-Assisted Ideation
+        ↓
+Content & Narrative Development
+        ↓
+Multi-Model Refinement
+(ChatGPT + Claude)
+        ↓
+Visual & Structural Iteration
+        ↓
+Final Interactive HTML Presentation
+        ↓
+GitHub Pages Deployment
+
 ## 🎨 Presentation
 
 The final presentation contains **15 slides** covering Data Science concepts, applications, workflows, and real-world examples.
