@@ -12,15 +12,15 @@ Interactive 15-slide Data Science presentation created using a multi-model Gener
 
 ### Title Slide
 
-![Data Science Presentation — Title Slide](title-slide.png)
+![Data Science Presentation — Title Slide](screenshots/title-slide.png)
 
 ### Content Slide
 
-![Data Science Presentation — Content](content-slide.png)
+![Data Science Presentation — Content](screenshots/content-slide.png)
 
 ### Visual / Data Slide
 
-![Data Science Presentation — Visual](visual-slide.png)
+![Data Science Presentation — Visual](screenshots/visual-slide.png)
 
 ## 📌 Project Overview
 
