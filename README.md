@@ -7,6 +7,20 @@ A 15-slide Data Science keynote presentation created with Generative AI, demonst
 **View the interactive presentation:**  
 https://lakshpreetkaur02.github.io/prompt-engineering-presentation/
 
+## 🖼️ Presentation Preview
+
+### Title Slide
+
+![Data Science Presentation — Title Slide](title-slide.png)
+
+### Content Slide
+
+![Data Science Presentation — Content](content-slide.png)
+
+### Visual / Data Slide
+
+![Data Science Presentation — Visual](visual-slide.png)
+
 ## 📌 Project Overview
 
 This project explores how Generative AI can be used as a creative and productivity tool to develop a complete professional presentation — from concept and narrative structure to content, visual direction, refinement, and final presentation.
