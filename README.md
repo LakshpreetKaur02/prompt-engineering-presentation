@@ -96,6 +96,17 @@ Final Interactive HTML Presentation
         ↓
 GitHub Pages Deployment
 
+### AI Tools & Workflow
+
+The presentation was developed using a multi-model Generative AI workflow:
+
+- **ChatGPT** — used for ideation, presentation structure, content development, and iterative refinement.
+- **Claude** — used as a complementary model for reviewing, refining, and improving the presentation.
+- **Prompt engineering** — prompts were iteratively refined by providing context, objectives, constraints, visual direction, and feedback.
+- **Human review** — AI-generated outputs were reviewed, selected, edited, and integrated into the final presentation.
+
+The workflow demonstrates how multiple GenAI tools can be combined with human judgment to move from an initial concept to a polished final deliverable.
+
 ## 📈 Project Outcome
 
 The final result is a 15-slide interactive Data Science keynote that combines AI-assisted content development with a custom visual presentation experience.
