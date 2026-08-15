@@ -92,6 +92,18 @@ The visual design uses:
 - Structured information hierarchy
 - Responsive presentation layout
 
+## 💼 Skills Demonstrated
+
+This project demonstrates practical experience with:
+
+- Prompt engineering for structured creative and technical tasks
+- Multi-model Generative AI workflows
+- AI-assisted content generation and refinement
+- Iterative evaluation and improvement of AI outputs
+- Translating AI-generated ideas into a working interactive presentation
+- Visual communication and presentation design
+- Using AI as a collaborative tool rather than relying on a single generated output
+- 
 ## 🛠️ Tools & Technologies
 
 - **ChatGPT** — AI-assisted ideation, content development, and refinement
