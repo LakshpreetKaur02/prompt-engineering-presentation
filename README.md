@@ -1,106 +1,97 @@
 # GenAI Presentation — Prompt Engineering & Multi-Model Workflow
 
-A 15-slide presentation created with Generative AI, demonstrating prompt engineering, multi-model workflows using ChatGPT and Claude, iterative refinement, and AI-assisted content and visual design.
+A 15-slide Data Science keynote presentation created with Generative AI, demonstrating AI-assisted content development, visual design, iterative refinement, and multi-model workflow using ChatGPT and Claude.
 
-## Project Overview
+## 🚀 Live Presentation
 
-This project explores how Generative AI can be used as a creative and productivity tool for developing a complete professional presentation — from initial concept and structure to content, visual direction, refinement, and final presentation.
+**View the interactive presentation:**  
+https://lakshpreetkaur02.github.io/prompt-engineering-presentation/
 
-The presentation focuses on **Data Science** and was developed as a seminar/keynote-style presentation with a consistent technical and modern visual identity.
+## 📌 Project Overview
 
-## Objective
+This project explores how Generative AI can be used as a creative and productivity tool to develop a complete professional presentation — from concept and narrative structure to content, visual direction, refinement, and final presentation.
+
+The presentation focuses on **Data Science** and was developed as a seminar/keynote-style presentation with a consistent modern technical visual identity.
+
+## 🎯 Objective
 
 The goal was to create a professional 10–15 slide presentation while using Generative AI throughout the development process.
 
 The workflow focused on:
 
-* Developing the presentation concept and narrative
-* Structuring the slide sequence
-* Generating and refining presentation content
-* Establishing a consistent visual direction
-* Iterating through prompts to improve outputs
-* Using multiple AI models for different stages of the workflow
-* Combining AI-generated results with human evaluation and refinement
+- Developing the presentation concept and narrative
+- Generating and refining presentation content
+- Exploring visual and design directions with AI
+- Iterating on ideas and presentation structure
+- Using multiple AI models for different stages of development
+- Producing a final interactive HTML presentation
 
-## Generative AI Tools
+## 🤖 Generative AI Workflow
 
-| Tool        | Role                                                         |
-| ----------- | ------------------------------------------------------------ |
-| ChatGPT     | Ideation, prompt development, content generation, refinement |
-| Claude      | Alternative generation, evaluation, and refinement           |
-| Human input | Direction, evaluation, selection, and final decisions        |
+The project used **ChatGPT and Claude** as AI-assisted development tools.
 
-## Prompt Engineering Approach
+The workflow involved:
 
-Rather than relying on a single prompt, the presentation was developed through an iterative prompting process.
+1. **Concept development**  
+   Establishing the presentation topic, audience, narrative, and overall direction.
 
-### Workflow
+2. **Content development**  
+   Using Generative AI to help develop and refine slide content.
 
-**Concept → Structure → Generation → Evaluation → Refinement → Final Presentation**
+3. **Visual direction**  
+   Exploring modern presentation layouts, typography, color systems, visual hierarchy, and interactive elements.
 
-Prompts were progressively refined to improve:
+4. **Iterative refinement**  
+   Reviewing generated ideas, identifying improvements, and refining the presentation through multiple iterations.
 
-* Content relevance
-* Slide structure
-* Narrative flow
-* Visual hierarchy
-* Typography
-* Consistency
-* Presentation quality
+5. **Final implementation**  
+   Converting the developed concept into a self-contained interactive HTML presentation.
 
-This project demonstrates the use of Generative AI as an iterative creative partner rather than simply as a one-shot content generator.
+## 🧠 Prompt Engineering Approach
 
-## Multi-Model Workflow
+Rather than relying on a single prompt, the project used an iterative AI-assisted workflow.
 
-Both ChatGPT and Claude were incorporated into the workflow.
+The process involved progressively refining:
 
-Using multiple models made it possible to explore different approaches to:
+- Context
+- Desired output
+- Presentation structure
+- Visual requirements
+- Content quality
+- Consistency
+- User experience
 
-* Idea generation
-* Content development
-* Presentation structure
-* Visual direction
-* Critique and refinement
+This demonstrates how prompt engineering can be used as an **iterative problem-solving process**, rather than simply generating a one-time response.
 
-The final result was selected and refined through human evaluation rather than being accepted directly from a single AI generation.
+## 🎨 Presentation
 
-## Final Presentation
+The final presentation contains **15 slides** covering Data Science concepts, applications, workflows, and real-world examples.
 
-The final deliverable is a **15-slide Data Science keynote-style presentation**.
+The visual design uses:
 
-The presentation uses a dark, technology-focused visual language with data-inspired elements, structured typography, and consistent slide navigation.
+- Dark technical aesthetic
+- Consistent typography
+- Data-inspired visual elements
+- Interactive navigation
+- Charts and diagrams
+- Structured information hierarchy
+- Responsive presentation layout
 
-### Presentation Preview
+## 🛠️ Tools & Technologies
 
-*Screenshots and the final presentation file will be added to this section.*
+- **ChatGPT** — AI-assisted ideation, content development, and refinement
+- **Claude** — AI-assisted development and refinement
+- **Generative AI** — Content and visual exploration
+- **HTML**
+- **CSS**
+- **JavaScript**
+- **GitHub**
+- **GitHub Pages**
 
-## Skills Demonstrated
+## 📂 Project Structure
 
-* Prompt Engineering
-* Generative AI
-* Multi-Model AI Workflows
-* AI-Assisted Content Generation
-* Iterative Prompt Refinement
-* Presentation Design
-* Visual Communication
-* Human-in-the-Loop AI Workflows
-* AI Output Evaluation
-
-## Key Takeaways
-
-This project demonstrates that effective Generative AI workflows involve more than generating an initial response.
-
-The quality of the final result depends on:
-
-1. Clear problem definition
-2. Specific prompting
-3. Iterative refinement
-4. Evaluation of generated outputs
-5. Combining outputs from different models
-6. Human judgment and final selection
-
-## Project Status
-
-**Completed**
-
-The presentation has been developed as a complete 15-slide keynote-style presentation. Additional prompt iterations, screenshots, and supporting project artifacts will be documented in this repository.
+```text
+prompt-engineering-presentation/
+│
+├── README.md
+└── index.html
