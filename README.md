@@ -146,3 +146,14 @@ prompt-engineering-presentation/
 │
 ├── README.md
 └── index.html
+
+## 💡 Key Takeaways
+
+This project reinforced several practical lessons about working with Generative AI:
+
+- Better results come from clear context, constraints, and iterative refinement.
+- Different AI models can be used as complementary tools within the same workflow.
+- AI-generated content still requires human review, selection, and refinement.
+- Prompt engineering is an iterative process rather than a one-shot instruction.
+- Generative AI can support both creative direction and technical implementation.
+- A successful AI workflow should produce a usable final deliverable, not just generated text.
