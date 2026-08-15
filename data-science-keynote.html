@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Science — Transforming Data into Knowledge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#090c14;
+  --panel:#121826;
+  --panel-soft:#161d2e;
+  --pulse:#5b8def;
+  --pulse-dim:#5b8def33;
+  --spark:#f2a65a;
+  --coral:#ff6f6f;
+  --mist:#8b96ac;
+  --paper:#f5f7fa;
+  --line:#232b3f;
+  --display:'Sora',sans-serif;
+  --body:'Inter',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  height:100%;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--body);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+}
+::selection{background:var(--pulse); color:var(--ink);}
+:focus-visible{outline:2px solid var(--pulse); outline-offset:3px; border-radius:4px;}
+.skip-link{
+  position:fixed; top:-60px; left:1rem; z-index:100;
+  background:var(--pulse); color:var(--ink); font-family:var(--mono); font-size:.8rem;
+  padding:.6rem 1rem; border-radius:8px; transition:top .25s ease;
+}
+.skip-link:focus{top:1rem;}
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+  clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+/* ---------- Ambient network canvas ---------- */
+#network{
+  position:fixed; inset:0; width:100%; height:100%;
+  z-index:0; opacity:.55;
+}
+
+/* ---------- Deck shell ---------- */
+#deck{
+  position:relative; z-index:1;
+  height:100vh; width:100vw;
+}
+.slide{
+  position:absolute; inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:6vh 8vw;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(24px);
+  transition:opacity .6s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1);
+}
+.slide.active{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+.slide.leaving{
+  opacity:0;
+  transform:translateY(-24px);
+}
+.slide-inner{
+  width:100%;
+  max-width:1180px;
+  margin:0 auto;
+}
+
+/* reveal-on-active children */
+.reveal{
+  opacity:0;
+  transform:translateY(18px);
+  transition:opacity .7s ease, transform .7s cubic-bezier(.22,.61,.36,1);
+}
+.slide.active .reveal{opacity:1; transform:translateY(0);}
+.slide.active .reveal:nth-child(1){transition-delay:.05s;}
+.slide.active .reveal:nth-child(2){transition-delay:.14s;}
+.slide.active .reveal:nth-child(3){transition-delay:.23s;}
+.slide.active .reveal:nth-child(4){transition-delay:.32s;}
+.slide.active .reveal:nth-child(5){transition-delay:.41s;}
+.slide.active .reveal:nth-child(6){transition-delay:.5s;}
+.slide.active .reveal:nth-child(7){transition-delay:.59s;}
+
+/* stagger for grids */
+.stagger > *{
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .55s ease, transform .55s cubic-bezier(.22,.61,.36,1);
+}
+.slide.active .stagger > *{opacity:1; transform:translateY(0);}
+.slide.active .stagger > *:nth-child(1){transition-delay:.15s;}
+.slide.active .stagger > *:nth-child(2){transition-delay:.22s;}
+.slide.active .stagger > *:nth-child(3){transition-delay:.29s;}
+.slide.active .stagger > *:nth-child(4){transition-delay:.36s;}
+.slide.active .stagger > *:nth-child(5){transition-delay:.43s;}
+.slide.active .stagger > *:nth-child(6){transition-delay:.5s;}
+.slide.active .stagger > *:nth-child(7){transition-delay:.57s;}
+.slide.active .stagger > *:nth-child(8){transition-delay:.64s;}
+.slide.active .stagger > *:nth-child(9){transition-delay:.71s;}
+.slide.active .stagger > *:nth-child(10){transition-delay:.78s;}
+
+/* ---------- Typography ---------- */
+.eyebrow{
+  font-family:var(--mono);
+  font-size:.72rem;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:var(--spark);
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  margin-bottom:1.1rem;
+}
+.eyebrow::before{
+  content:'';
+  width:22px; height:1px;
+  background:var(--spark);
+  display:inline-block;
+}
+h1.headline{
+  font-family:var(--display);
+  font-weight:700;
+  font-size:clamp(2.2rem, 4.6vw, 4.1rem);
+  line-height:1.05;
+  letter-spacing:-.01em;
+  margin-bottom:1.1rem;
+}
+h2.subhead{
+  font-family:var(--display);
+  font-weight:600;
+  font-size:clamp(1.4rem, 2.4vw, 2rem);
+  line-height:1.15;
+  margin-bottom:1rem;
+  color:var(--paper);
+}
+p.lede{
+  font-size:clamp(1rem, 1.25vw, 1.2rem);
+  line-height:1.65;
+  color:var(--mist);
+  max-width:62ch;
+}
+.accent{color:var(--pulse);}
+.accent-spark{color:var(--spark);}
+
+/* ---------- Reusable components ---------- */
+.pill{
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-family:var(--mono); font-size:.75rem; letter-spacing:.08em;
+  padding:.35rem .8rem; border-radius:100px;
+  border:1px solid var(--line); color:var(--mist);
+  background:var(--panel-soft);
+}
+.card{
+  background:linear-gradient(180deg, var(--panel-soft), var(--panel));
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:1.4rem 1.5rem;
+  position:relative;
+  overflow:hidden;
+  transform:perspective(900px) rotateX(var(--tiltX,0deg)) rotateY(var(--tiltY,0deg)) translateY(0);
+  transition:opacity .55s ease, transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  will-change:transform;
+}
+.card::before{
+  content:'';
+  position:absolute; inset:0;
+  background:radial-gradient(160px 120px at var(--mx,50%) var(--my,0%), var(--pulse-dim), transparent 70%);
+  opacity:0; transition:opacity .4s ease;
+  pointer-events:none;
+}
+.card::after{
+  content:'';
+  position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background:linear-gradient(115deg, rgba(255,255,255,.08) 0%, transparent 30%);
+  opacity:0; transition:opacity .3s ease;
+}
+.card:hover{border-color:var(--pulse-dim); box-shadow:0 18px 40px -20px rgba(0,0,0,.55); transform:perspective(900px) rotateX(var(--tiltX,0deg)) rotateY(var(--tiltY,0deg)) translateY(-3px);}
+.card:hover::before, .card:hover::after{opacity:1;}
+@media (prefers-reduced-motion: reduce){
+  .card{transform:none !important;}
+}
+.card h3{
+  font-family:var(--display); font-size:1.05rem; font-weight:600; margin-bottom:.5rem;
+}
+.card p{font-size:.92rem; color:var(--mist); line-height:1.55;}
+.node-num{
+  font-family:var(--mono); font-size:.7rem; color:var(--pulse);
+  letter-spacing:.1em; margin-bottom:.6rem; display:block;
+}
+
+/* grid helpers */
+.grid{display:grid; gap:1rem;}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+
+/* ---------- Nav / chrome ---------- */
+#progress{
+  position:fixed; top:0; left:0; height:2px; background:linear-gradient(90deg,var(--pulse),var(--spark));
+  z-index:20; transition:width .5s cubic-bezier(.22,.61,.36,1);
+}
+#chrome{
+  position:fixed; bottom:0; left:0; right:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.4rem 2.2rem;
+  z-index:20;
+  pointer-events:none;
+}
+#chrome > *{pointer-events:auto;}
+.counter{
+  font-family:var(--mono); font-size:.8rem; color:var(--mist); letter-spacing:.05em;
+}
+.counter .cur{color:var(--paper); font-weight:600;}
+.navbtns{display:flex; gap:.6rem;}
+.navbtn{
+  width:42px; height:42px; border-radius:50%;
+  border:1px solid var(--line); background:var(--panel-soft);
+  color:var(--paper); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .25s ease;
+}
+.navbtn:hover{border-color:var(--pulse); background:var(--pulse-dim); transform:translateY(-2px);}
+.navbtn:active{transform:translateY(0);}
+.navbtn svg{width:16px; height:16px;}
+.navbtn:disabled{opacity:.25; cursor:default; pointer-events:none;}
+
+.dotrail{
+  display:flex; gap:6px; align-items:center;
+}
+.dotrail button{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--line); border:none; cursor:pointer;
+  transition:all .3s ease; padding:0;
+}
+.dotrail button.active{ width:20px; border-radius:4px; background:var(--pulse);}
+
+#brand{
+  position:fixed; top:1.4rem; left:2.2rem; z-index:20;
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.15em;
+  color:var(--mist); display:flex; align-items:center; gap:.5rem;
+  text-transform:uppercase;
+}
+#brand span.dot{width:6px;height:6px;border-radius:50%;background:var(--pulse); box-shadow:0 0 12px var(--pulse);}
+#fskip{
+  position:fixed; top:1.35rem; right:2.2rem; z-index:20;
+  font-family:var(--mono); font-size:.72rem; color:var(--mist);
+  background:none; border:1px solid var(--line); border-radius:100px;
+  padding:.4rem .9rem; cursor:pointer; letter-spacing:.05em;
+}
+#fskip:hover{color:var(--paper); border-color:var(--pulse);}
+
+/* ---------- Slide-specific ---------- */
+
+/* Title */
+.title-slide .slide-inner{text-align:left;}
+.title-kicker{font-family:var(--mono); color:var(--spark); letter-spacing:.3em; font-size:.8rem; text-transform:uppercase; margin-bottom:1.5rem;}
+.title-main{
+  font-family:var(--display); font-weight:800; letter-spacing:-.02em;
+  font-size:clamp(2.6rem,7vw,6rem); line-height:1;
+  background:linear-gradient(180deg,#ffffff, #b9c4dc);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.title-sub{
+  font-family:var(--display); font-size:clamp(1.1rem,2vw,1.6rem); color:var(--mist);
+  margin-top:1.3rem; max-width:44ch; font-weight:400;
+}
+.title-quote{
+  margin-top:2.6rem; font-family:var(--mono); font-size:.85rem; color:var(--pulse);
+  border-left:2px solid var(--pulse); padding-left:1rem;
+}
+
+/* Timeline (Evolution) */
+.timeline{position:relative; padding-left:2rem;}
+.timeline::before{
+  content:''; position:absolute; left:6px; top:6px; bottom:6px; width:2px;
+  background:var(--line); opacity:.5;
+}
+.timeline .tl-progress{
+  content:''; position:absolute; left:6px; top:6px; width:2px; height:0;
+  background:linear-gradient(180deg,var(--pulse),var(--spark));
+  box-shadow:0 0 8px var(--pulse-dim);
+  transition:height .7s cubic-bezier(.22,.61,.36,1);
+  z-index:1;
+}
+.tl-item{
+  position:relative; padding:0 0 1.6rem 1.6rem;
+  opacity:0; transform:translateY(10px);
+  transition:opacity .5s ease, transform .5s ease;
+}
+.tl-item::before{
+  content:''; position:absolute; left:-2.6rem; top:.2rem; z-index:2;
+  width:12px; height:12px; border-radius:50%;
+  background:var(--ink); border:2px solid var(--pulse); opacity:.55;
+  transition:opacity .4s ease, box-shadow .4s ease, transform .4s ease, background .4s ease;
+}
+.tl-item.tl-active{opacity:1; transform:translateY(0);}
+.tl-item.tl-active::before{
+  opacity:1; background:var(--pulse); transform:scale(1.2);
+  box-shadow:0 0 0 5px var(--pulse-dim), 0 0 16px 2px var(--pulse);
+}
+.tl-item.tl-done{opacity:.45; transform:translateY(0);}
+.tl-item.tl-done::before{opacity:.7; background:var(--pulse); box-shadow:none; transform:scale(1);}
+.tl-item .yr{font-family:var(--mono); color:var(--spark); font-size:.85rem; letter-spacing:.05em;}
+.tl-item .desc{color:var(--paper); font-size:1rem; margin-top:.2rem;}
+
+/* Icon grid (Why important / Applications) */
+.icon-card{display:flex; flex-direction:column; gap:.5rem;}
+.icon-glyph{
+  width:38px; height:38px; border-radius:10px; background:var(--pulse-dim);
+  display:flex; align-items:center; justify-content:center; color:var(--pulse); font-size:1.1rem;
+}
+
+/* Two-column split */
+.split{display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center;}
+
+/* Data types */
+.type-card{border-radius:16px; padding:1.6rem; border:1px solid var(--line);}
+.type-card.structured{background:linear-gradient(160deg,#152238,#121826);}
+.type-card.semi{background:linear-gradient(160deg,#1c1c30,#121826);}
+.type-card.unstructured{background:linear-gradient(160deg,#241a1e,#121826);}
+.type-bar{height:6px; border-radius:4px; margin:.9rem 0; overflow:hidden; background:var(--line);}
+.type-bar i{display:block; height:100%; border-radius:4px;}
+
+/* Lifecycle spiral */
+.lifecycle-wrap{display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center;}
+.lc-steps{display:flex; flex-direction:column; gap:.55rem; max-height:64vh; overflow:auto; padding-right:.5rem;}
+.lc-step{
+  display:flex; gap:.8rem; align-items:flex-start;
+  border-left:2px solid var(--line); padding:.4rem 0 .4rem .9rem;
+  transition:border-color .3s ease;
+}
+.lc-step:hover{border-color:var(--pulse);}
+.lc-step .n{font-family:var(--mono); color:var(--pulse); font-size:.78rem; min-width:1.4rem;}
+.lc-step .t{font-family:var(--display); font-weight:600; font-size:.95rem;}
+.lc-step .d{font-size:.82rem; color:var(--mist); line-height:1.4;}
+
+/* ML columns */
+.ml-col{border-top:2px solid var(--pulse); padding-top:1rem;}
+.ml-col.unsup{border-color:var(--spark);}
+.ml-col.rl{border-color:var(--coral);}
+.ml-col ul{list-style:none; margin-top:.7rem; display:flex; flex-wrap:wrap; gap:.4rem;}
+.ml-col li{
+  font-family:var(--mono); font-size:.72rem; color:var(--mist);
+  border:1px solid var(--line); border-radius:100px; padding:.25rem .65rem;
+}
+
+/* tools cloud */
+.tool-cloud{display:flex; flex-wrap:wrap; gap:.6rem;}
+.tool-chip{
+  font-family:var(--mono); font-size:.85rem; padding:.45rem 1rem .45rem .55rem; border-radius:10px;
+  border:1px solid var(--line); background:var(--panel-soft); color:var(--paper);
+  display:inline-flex; align-items:center; gap:.55rem; transition:border-color .25s ease, transform .25s ease;
+}
+.tool-chip:hover{border-color:var(--pulse); transform:translateY(-2px);}
+.tool-mark{
+  width:22px; height:22px; border-radius:7px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--display); font-weight:800; font-size:.68rem; color:#0a0d14;
+}
+
+/* case studies (Applications) */
+.case-grid{margin-top:1.4rem; gap:.85rem;}
+.case-card{
+  display:flex; align-items:flex-start; gap:.75rem; padding:1rem 1.1rem;
+}
+.case-logo{
+  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--display); font-weight:800; font-size:.85rem; color:#0a0d14;
+}
+.case-card h3{font-size:.92rem; margin-bottom:.15rem;}
+.case-card p{font-size:.78rem;}
+
+/* advantages / challenges list */
+.chk-list{display:flex; flex-direction:column; gap:.85rem;}
+.chk-item{display:flex; gap:.8rem; align-items:flex-start; font-size:.98rem; color:var(--paper);}
+.chk-mark{
+  flex-shrink:0; width:22px; height:22px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+  font-size:.75rem; margin-top:.15rem;
+}
+.chk-mark.good{background:rgba(91,141,239,.15); color:var(--pulse);}
+.chk-mark.warn{background:rgba(255,111,111,.15); color:var(--coral);}
+
+/* careers */
+.career-row{display:flex; justify-content:space-between; align-items:center; padding:.7rem 0; border-bottom:1px solid var(--line);}
+.career-row span.role{font-family:var(--display); font-weight:600;}
+.skill-tags{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1rem;}
+
+/* future trends */
+.trend-orbit{position:relative; width:100%; aspect-ratio:1/1; max-width:420px; margin:0 auto;}
+
+/* closing */
+.closing .slide-inner{text-align:center;}
+.closing-quote{
+  font-family:var(--display); font-weight:600; font-size:clamp(1.4rem,3vw,2.2rem);
+  max-width:34ch; margin:0 auto 1.5rem; line-height:1.35;
+}
+
+footer.note{font-family:var(--mono); font-size:.7rem; color:var(--mist); margin-top:1.6rem; letter-spacing:.05em;}
+
+@media (max-width:860px){
+  .grid-4{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(2,1fr);}
+  .grid-2, .split, .lifecycle-wrap{grid-template-columns:1fr;}
+  #brand{display:none;}
+  .slide{padding:9vh 6vw 12vh;}
+}
+
+/* =====================================================================
+   PREMIUM UPGRADE LAYER
+   Ambient backgrounds · slide transition variants · micro-interactions ·
+   new component systems (orbit / tree / map / roadmap) · charts · stats
+   ===================================================================== */
+
+/* ---------- Cursor glow (desktop only, subtle) ---------- */
+#cursorGlow{
+  position:fixed; top:0; left:0; width:420px; height:420px;
+  border-radius:50%; pointer-events:none; z-index:2;
+  background:radial-gradient(circle, var(--pulse-dim) 0%, transparent 70%);
+  transform:translate(-50%,-50%);
+  opacity:0; transition:opacity .4s ease;
+  mix-blend-mode:screen;
+  will-change:transform;
+}
+body.has-mouse #cursorGlow{opacity:1;}
+@media (hover:none), (max-width:860px){ #cursorGlow{display:none;} }
+
+/* ---------- Ambient background layer (per-slide identity) ---------- */
+#ambient{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;}
+#ambient .layer{position:absolute; inset:-10%; opacity:0; transition:opacity 1.1s ease;}
+#network{transition:opacity .8s ease;}
+
+/* constellation (default) — dims when another ambient owns the slide */
+body[data-bg="constellation"] #network{opacity:.55;}
+body:not([data-bg="constellation"]) #network{opacity:.12;}
+
+/* timeline drift — Evolution slide */
+.amb-timeline{
+  background-image:repeating-linear-gradient(90deg, transparent 0 78px, var(--line) 78px 79px, transparent 79px 160px),
+    linear-gradient(180deg, transparent, var(--ink) 90%);
+  background-size:160px 100%, 100% 100%;
+  animation:driftX 22s linear infinite;
+}
+body[data-bg="timeline"] .amb-timeline{opacity:.35;}
+@keyframes driftX{ from{background-position:0 0, 0 0;} to{background-position:-1600px 0, 0 0;} }
+
+/* concentric rings — Lifecycle slide */
+.amb-rings{
+  background:
+    radial-gradient(circle at 78% 50%, transparent 0 140px, var(--pulse-dim) 141px 143px, transparent 144px 210px, var(--pulse-dim) 211px 213px, transparent 214px 300px);
+  animation:ringSpin 40s linear infinite;
+}
+body[data-bg="rings"] .amb-rings{opacity:.5;}
+@keyframes ringSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+
+/* neural mesh — Machine Learning slide */
+.amb-neural{
+  background-image:radial-gradient(var(--pulse-dim) 1.5px, transparent 1.5px);
+  background-size:46px 46px;
+  animation:neuralPulse 5s ease-in-out infinite;
+}
+body[data-bg="neural"] .amb-neural{opacity:.4;}
+@keyframes neuralPulse{ 0%,100%{opacity:.25;} 50%{opacity:.55;} }
+
+/* map graticule — Applications slide */
+.amb-map{
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(circle at 50% 45%, #000 40%, transparent 78%);
+}
+body[data-bg="map"] .amb-map{opacity:.3;}
+
+/* gradient mesh — Future slide */
+.amb-mesh{
+  background:
+    radial-gradient(38% 42% at 18% 22%, var(--pulse-dim), transparent 70%),
+    radial-gradient(34% 38% at 82% 30%, rgba(242,166,90,.18), transparent 70%),
+    radial-gradient(46% 46% at 55% 85%, rgba(255,111,111,.12), transparent 70%);
+  animation:meshFloat 16s ease-in-out infinite;
+}
+body[data-bg="mesh"] .amb-mesh{opacity:.9;}
+@keyframes meshFloat{
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(-2%,3%) scale(1.06);}
+}
+
+/* soft particles — Conclusion slide */
+.amb-particles{opacity:0;}
+body[data-bg="particles"] .amb-particles{opacity:1;}
+.amb-particles i{
+  position:absolute; bottom:-6%; border-radius:50%;
+  background:var(--pulse); filter:blur(.5px);
+  animation:floatUp linear infinite;
+  opacity:.5;
+}
+@keyframes floatUp{
+  from{transform:translateY(0) translateX(0); opacity:0;}
+  10%{opacity:.6;}
+  90%{opacity:.4;}
+  to{transform:translateY(-112vh) translateX(var(--drift,20px)); opacity:0;}
+}
+
+/* elegant bokeh lights — Thank you slide */
+.amb-lights{opacity:0;}
+body[data-bg="lights"] .amb-lights{opacity:1;}
+.amb-lights i{
+  position:absolute; border-radius:50%; filter:blur(24px);
+  animation:bokeh 9s ease-in-out infinite;
+  mix-blend-mode:screen;
+}
+@keyframes bokeh{
+  0%,100%{transform:translate(0,0) scale(1); opacity:.35;}
+  50%{transform:translate(20px,-24px) scale(1.15); opacity:.65;}
+}
+
+/* ---------- Slide transition variants ---------- */
+.slide[data-transition="zoom"]{transform:scale(.9); filter:blur(4px);}
+.slide[data-transition="zoom"].active{transform:scale(1); filter:blur(0);}
+.slide[data-transition="zoom"].leaving{transform:scale(1.06); filter:blur(4px);}
+
+.slide[data-transition="blur"]{transform:translateY(10px); filter:blur(10px);}
+.slide[data-transition="blur"].active{transform:translateY(0); filter:blur(0);}
+.slide[data-transition="blur"].leaving{filter:blur(10px);}
+
+.slide[data-transition="perspective"]{transform:perspective(1400px) rotateX(6deg) translateY(30px); transform-origin:50% 100%;}
+.slide[data-transition="perspective"].active{transform:perspective(1400px) rotateX(0) translateY(0);}
+.slide[data-transition="perspective"].leaving{transform:perspective(1400px) rotateX(-6deg) translateY(-30px);}
+
+.slide[data-transition="rise"]{transform:translateY(46px) scale(.97);}
+.slide[data-transition="rise"].active{transform:translateY(0) scale(1);}
+
+/* ---------- Title slide extras ---------- */
+.title-slide{overflow:visible;}
+.title-glow{
+  position:absolute; width:640px; height:640px; border-radius:50%;
+  background:radial-gradient(circle, var(--pulse-dim), transparent 68%);
+  top:50%; left:18%; transform:translate(-50%,-50%);
+  z-index:-1; animation:glowPulse 6s ease-in-out infinite;
+  filter:blur(6px);
+}
+@keyframes glowPulse{ 0%,100%{opacity:.55; transform:translate(-50%,-50%) scale(1);} 50%{opacity:.9; transform:translate(-50%,-50%) scale(1.12);} }
+.title-particles{position:absolute; inset:0; z-index:-1; overflow:visible;}
+.title-particles i{
+  position:absolute; width:4px; height:4px; border-radius:50%;
+  background:var(--spark); opacity:.7;
+  animation:titleFloat 7s ease-in-out infinite;
+}
+@keyframes titleFloat{
+  0%,100%{transform:translate(0,0); opacity:.3;}
+  50%{transform:translate(var(--fx,14px),var(--fy,-22px)); opacity:.9;}
+}
+.slide.active .title-main{animation:titleZoom 1s cubic-bezier(.22,.61,.36,1) both;}
+@keyframes titleZoom{ from{opacity:0; transform:scale(1.16);} to{opacity:1; transform:scale(1);} }
+
+/* ---------- Stat strip / animated counters ---------- */
+.stat-strip{display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; margin-top:1.6rem;}
+.stat-box{
+  border:1px solid var(--line); border-radius:16px; padding:1.3rem 1.1rem;
+  background:linear-gradient(180deg,var(--panel-soft),var(--panel));
+  text-align:left; position:relative; overflow:hidden;
+}
+.stat-box .num{
+  font-family:var(--display); font-weight:800; font-size:clamp(1.7rem,3vw,2.6rem);
+  color:var(--paper); display:flex; align-items:baseline; gap:.15rem;
+}
+.stat-box .num .suffix{font-size:.55em; color:var(--spark); font-weight:700;}
+.stat-box .lbl{font-size:.82rem; color:var(--mist); margin-top:.35rem; line-height:1.4;}
+
+/* ---------- Icon glyphs (lucide) ---------- */
+.icon-glyph svg, .chk-mark svg{width:18px; height:18px;}
+.tool-chip{display:inline-flex; align-items:center; gap:.5rem;}
+.tool-chip svg{width:14px; height:14px; color:var(--pulse);}
+
+/* ---------- Card hover elevation / sheen / fly-in ---------- */
+.card, .type-card{transition:transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s ease, border-color .3s ease;}
+.card:hover{transform:translateY(-6px); box-shadow:0 18px 40px -18px rgba(0,0,0,.55); border-color:#2c3752;}
+.card::after{
+  content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background:linear-gradient(115deg, transparent 40%, rgba(255,255,255,.06) 50%, transparent 60%);
+  transform:translateX(-120%); transition:transform .7s ease;
+}
+.card:hover::after{transform:translateX(120%);}
+
+.stagger[data-fly] > *{opacity:0; transition:opacity .6s ease, transform .6s cubic-bezier(.22,.61,.36,1);}
+.slide.active .stagger[data-fly] > *{opacity:1; transform:translate(0,0) !important;}
+.stagger[data-fly] > *:nth-child(3n+1){transform:translateX(-40px);}
+.stagger[data-fly] > *:nth-child(3n+2){transform:translateY(34px);}
+.stagger[data-fly] > *:nth-child(3n){transform:translateX(40px);}
+
+/* ---------- Ripple (nav / dots / buttons) ---------- */
+.ripple-el{position:relative; overflow:hidden;}
+.ripple-ink{position:absolute; border-radius:50%; background:rgba(91,141,239,.45); transform:scale(0); animation:rippleOut .6s ease-out forwards; pointer-events:none;}
+@keyframes rippleOut{ to{transform:scale(1); opacity:0;} }
+
+/* =====================================================================
+   Lifecycle — circular process diagram
+   ===================================================================== */
+.lc-orbit-wrap{position:relative; width:100%; max-width:420px; aspect-ratio:1/1; margin:0 auto;}
+.lc-orbit-wrap svg{width:100%; height:100%; overflow:visible;}
+.lc-node{cursor:pointer;}
+.lc-node circle.dot{fill:var(--panel-soft); stroke:var(--line); stroke-width:1.5; transition:all .35s ease;}
+.lc-node text{fill:var(--mist); font-family:var(--mono); font-size:9px; transition:fill .35s ease;}
+.lc-node.lit circle.dot{fill:var(--pulse); stroke:var(--pulse); filter:drop-shadow(0 0 8px var(--pulse));}
+.lc-node.lit text{fill:var(--paper);}
+.lc-arc{fill:none; stroke:var(--pulse); stroke-width:2; stroke-linecap:round; opacity:.85;}
+.lc-track{fill:none; stroke:var(--line); stroke-width:2;}
+.lc-center-label{fill:var(--paper); font-family:var(--display); font-weight:700; font-size:13px; text-anchor:middle;}
+.lc-detail{
+  border:1px solid var(--line); border-radius:16px; padding:1.5rem;
+  background:linear-gradient(180deg,var(--panel-soft),var(--panel)); min-height:190px;
+  transition:box-shadow .3s ease;
+}
+.lc-detail .n{font-family:var(--mono); color:var(--pulse); font-size:.78rem; letter-spacing:.1em;}
+.lc-detail .t{font-family:var(--display); font-weight:700; font-size:1.3rem; margin:.35rem 0 .6rem;}
+.lc-detail .d{color:var(--mist); font-size:.95rem; line-height:1.6;}
+.lc-dashes{display:flex; gap:5px; margin-top:1.2rem;}
+.lc-dashes i{flex:1; height:3px; border-radius:2px; background:var(--line); transition:background .3s ease;}
+.lc-dashes i.done{background:var(--pulse);}
+
+/* =====================================================================
+   Machine Learning — growing tree
+   ===================================================================== */
+.ml-tree-wrap{display:grid; grid-template-columns:1.1fr 1fr; gap:2rem; align-items:center;}
+.ml-tree-wrap svg{width:100%; height:auto; overflow:visible;}
+.ml-branch-path{fill:none; stroke-width:2; stroke-linecap:round; stroke-dasharray:400; stroke-dashoffset:400; transition:stroke-dashoffset 1.1s cubic-bezier(.22,.61,.36,1);}
+.slide.active .ml-branch-path{stroke-dashoffset:0;}
+.ml-branch-path.b1{stroke:var(--pulse); transition-delay:.2s;}
+.ml-branch-path.b2{stroke:var(--spark); transition-delay:.4s;}
+.ml-branch-path.b3{stroke:var(--coral); transition-delay:.6s;}
+.ml-node-pop{opacity:0; transform:scale(.5); transform-box:fill-box; transform-origin:center; transition:opacity .4s ease, transform .4s cubic-bezier(.34,1.56,.64,1);}
+.slide.active .ml-node-pop{opacity:1; transform:scale(1);}
+.ml-leaf-text{font-family:var(--mono); font-size:9.5px; fill:var(--paper);}
+.ml-root-text{font-family:var(--display); font-weight:700; font-size:13px; fill:var(--paper); text-anchor:middle;}
+.ml-cat-text{font-family:var(--display); font-weight:600; font-size:11px; text-anchor:middle;}
+.ml-panels{display:flex; flex-direction:column; gap:.7rem;}
+.ml-panel{
+  border:1px solid var(--line); border-radius:14px; padding:1rem 1.1rem; cursor:pointer;
+  background:var(--panel-soft); transition:all .3s ease;
+}
+.ml-panel:hover, .ml-panel.open{border-color:var(--pulse); background:linear-gradient(180deg,var(--panel-soft),var(--panel));}
+.ml-panel h3{font-family:var(--display); font-size:1rem; font-weight:600; display:flex; align-items:center; gap:.5rem;}
+.ml-panel h3 i.sw{width:9px; height:9px; border-radius:50%; display:inline-block;}
+.ml-panel p{font-size:.85rem; color:var(--mist); margin-top:.4rem;}
+.ml-panel ul{list-style:none; display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.6rem; max-height:0; overflow:hidden; transition:max-height .35s ease;}
+.ml-panel.open ul{max-height:200px;}
+.ml-panel li{font-family:var(--mono); font-size:.7rem; color:var(--mist); border:1px solid var(--line); border-radius:100px; padding:.22rem .6rem;}
+
+/* =====================================================================
+   Applications — world map (static-safe: fully visible with no JS/hover
+   required, so it renders correctly on a single static export frame —
+   PDF/PPTX conversion, screenshots, etc. Hover is a bonus enhancement
+   only, never a requirement for content to appear.)
+   ===================================================================== */
+.map-wrap{position:relative; width:100%; margin-top:1.2rem; overflow:visible;}
+.map-globe{position:relative; width:100%; aspect-ratio:16/8.4; min-height:250px; overflow:visible; perspective:900px;}
+.map-globe svg{position:absolute; inset:0; display:block; width:100%; height:100%; overflow:visible;
+  transform:rotateX(6deg); transform-origin:50% 50%; filter:drop-shadow(0 22px 34px rgba(0,0,0,.5));}
+.map-land{fill:url(#landGrad); stroke:var(--pulse-dim); stroke-width:1.5;}
+.map-land-sheen{fill:url(#landSheen); pointer-events:none; mix-blend-mode:screen; opacity:.65;}
+.map-grid-dot{fill:var(--pulse); opacity:.14;}
+.map-pin{cursor:pointer;}
+.map-pin circle.halo{fill:url(#pinHalo); opacity:.9; pointer-events:none;}
+.map-pin circle.ring{fill:none; stroke:var(--pulse); stroke-width:1.5; opacity:.5; animation:pinRing 2.4s ease-out infinite;}
+.map-pin circle.core{fill:var(--spark); stroke:var(--paper); stroke-width:1.5; filter:drop-shadow(0 0 4px var(--spark)); transition:r .25s ease;}
+.map-pin:hover circle.core, .map-pin.active circle.core{r:7.5; fill:var(--pulse); filter:drop-shadow(0 0 6px var(--pulse));}
+@keyframes pinRing{ 0%{r:5; opacity:.55;} 100%{r:17; opacity:0;} }
+.map-label{font-family:var(--mono); font-size:10px; fill:var(--paper); pointer-events:none; font-weight:600;}
+.map-label-bg{fill:var(--ink); opacity:.6; pointer-events:none;}
+/* optional live-hover tooltip — purely additive, base content never depends on it */
+.map-card{
+  position:absolute; width:190px; padding:1rem 1.1rem; border-radius:14px;
+  background:linear-gradient(180deg,var(--panel-soft),var(--panel)); border:1px solid var(--pulse);
+  box-shadow:0 16px 36px -14px rgba(0,0,0,.6);
+  opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+  transform:translateY(6px);
+  z-index:5;
+}
+.map-card.show{opacity:1; transform:translateY(0);}
+.map-card h4{font-family:var(--display); font-size:.92rem; margin-bottom:.3rem;}
+.map-card p{font-size:.78rem; color:var(--mist); line-height:1.4;}
+/* always-visible legend so every industry + description reads fine with zero interaction */
+.map-legend{display:grid; grid-template-columns:1fr 1fr 1fr; gap:.55rem; margin-top:1rem;}
+.map-legend .li{display:flex; gap:.55rem; align-items:flex-start; padding:.55rem .65rem; border:1px solid var(--line); border-radius:10px; background:var(--panel-soft);}
+.map-legend .dot{width:9px; height:9px; border-radius:50%; margin-top:.28rem; flex:none; box-shadow:0 0 8px currentColor;}
+.map-legend h5{font-family:var(--display); font-size:.78rem; margin:0 0 .1rem;}
+.map-legend p{font-size:.68rem; color:var(--mist); line-height:1.32; margin:0;}
+@media (max-width:900px){ .map-legend{grid-template-columns:1fr 1fr;} }
+
+/* =====================================================================
+   Careers — progressive roadmap
+   ===================================================================== */
+.roadmap{position:relative; padding-left:1.6rem; margin-top:.4rem;}
+.roadmap::before{
+  content:''; position:absolute; left:9px; top:8px; bottom:8px; width:2px; background:var(--line);
+}
+.roadmap::after{
+  content:''; position:absolute; left:9px; top:8px; width:2px; height:0; background:linear-gradient(180deg,var(--pulse),var(--spark));
+  transition:height 1.6s cubic-bezier(.22,.61,.36,1);
+}
+.slide.active .roadmap::after{height:calc(100% - 16px);}
+.rm-step{position:relative; padding:0 0 1.05rem 1.5rem; opacity:.35; transition:opacity .4s ease;}
+.rm-step::before{
+  content:''; position:absolute; left:-1.6rem; top:.05rem; width:14px; height:14px; border-radius:50%;
+  background:var(--ink); border:2px solid var(--line); transition:all .3s ease;
+}
+.rm-step.unlocked{opacity:1;}
+.rm-step.unlocked::before{border-color:var(--pulse); background:var(--pulse); box-shadow:0 0 10px var(--pulse);}
+.rm-step .lbl{font-family:var(--display); font-weight:600; font-size:.98rem;}
+.rm-step .tag{font-family:var(--mono); font-size:.66rem; color:var(--spark); letter-spacing:.08em;}
+
+/* =====================================================================
+   Charts
+   ===================================================================== */
+.chart-box{border:1px solid var(--line); border-radius:16px; padding:1rem 1.1rem 0.6rem; background:var(--panel-soft);}
+.chart-box .cap{font-family:var(--mono); font-size:.68rem; color:var(--mist); letter-spacing:.08em; text-transform:uppercase; margin-bottom:.5rem;}
+.chart-svg-box{width:100%; min-height:170px;}
+.chart-svg-box svg{width:100%; height:auto; display:block; overflow:visible;}
+.chart-svg-box text{font-family:var(--mono); fill:var(--mist);}
+
+/* =====================================================================
+   Confetti (Thank you)
+   ===================================================================== */
+#confetti{position:fixed; inset:0; z-index:15; pointer-events:none;}
+</style>
+</head>
+<body>
+
+<a href="#chrome" class="skip-link">Skip to navigation</a>
+<div id="slideAnnouncer" class="sr-only" role="status" aria-live="polite"></div>
+<canvas id="network" aria-hidden="true"></canvas>
+<div id="ambient" aria-hidden="true">
+  <div class="layer amb-timeline"></div>
+  <div class="layer amb-rings"></div>
+  <div class="layer amb-neural"></div>
+  <div class="layer amb-map"></div>
+  <div class="layer amb-mesh"></div>
+  <div class="layer amb-particles" id="ambParticles"></div>
+  <div class="layer amb-lights" id="ambLights"></div>
+</div>
+<div id="cursorGlow"></div>
+<div id="progress"></div>
+<div id="brand"><span class="dot"></span>DATA SCIENCE — KEYNOTE</div>
+<button id="fskip">FULLSCREEN</button>
+
+<div id="deck">
+
+  <!-- 1. Title -->
+  <section class="slide title-slide" data-title="Introduction" data-bg="constellation" data-transition="zoom">
+    <div class="title-glow"></div>
+    <div class="title-particles" id="titleParticles"></div>
+    <div class="slide-inner">
+      <div class="title-kicker reveal">Seminar Keynote</div>
+      <h1 class="title-main reveal">Data Science</h1>
+      <p class="title-sub reveal">Transforming raw, chaotic data into knowledge — and knowledge into intelligent decisions.</p>
+      <div class="title-quote reveal">"Data Science is the discipline that turns signal buried in noise into decisions worth trusting."</div>
+    </div>
+  </section>
+
+  <!-- 2. What is Data Science -->
+  <section class="slide" data-title="What is Data Science" data-bg="constellation" data-transition="rise">
+    <div class="slide-inner split">
+      <div>
+        <div class="eyebrow reveal">01 — Introduction</div>
+        <h1 class="headline reveal">What is Data Science?</h1>
+        <p class="lede reveal">An interdisciplinary field combining <span class="accent">statistics</span>, <span class="accent">mathematics</span>, <span class="accent">computer science</span>, machine learning, and domain expertise to collect, process, analyze, and interpret large volumes of data.</p>
+        <p class="lede reveal" style="margin-top:1rem;">The goal: discover meaningful patterns, generate insight, and support better decisions — turning the flood of digital data into something organizations can actually act on.</p>
+      </div>
+      <div class="reveal">
+        <div class="card" style="padding:2rem;">
+          <span class="node-num">KEY IDEA</span>
+          <h3 style="font-size:1.3rem; line-height:1.4;">Data Science transforms raw data into <span class="accent-spark">actionable knowledge</span>.</h3>
+          <div style="margin-top:1.4rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+            <span class="pill">STATISTICS</span>
+            <span class="pill">ML / AI</span>
+            <span class="pill">DOMAIN EXPERTISE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Evolution -->
+  <section class="slide" data-title="Evolution" data-bg="timeline" data-transition="blur">
+    <div class="slide-inner split">
+      <div>
+        <div class="eyebrow reveal">02 — History</div>
+        <h1 class="headline reveal">Evolution of Data Science</h1>
+        <div class="timeline" style="margin-top:1.8rem;">
+          <div class="tl-progress"></div>
+          <div class="tl-item"><div class="yr">1960s</div><div class="desc">Data analysis centered mainly on classical statistics.</div></div>
+          <div class="tl-item"><div class="yr">1980s</div><div class="desc">Databases become common — organizations begin storing data at scale.</div></div>
+          <div class="tl-item"><div class="yr">1990s</div><div class="desc">Data mining emerges to uncover hidden patterns in stored data.</div></div>
+          <div class="tl-item"><div class="yr">2000s</div><div class="desc">The internet explodes — the era of Big Data begins.</div></div>
+          <div class="tl-item"><div class="yr">2010s</div><div class="desc">Machine Learning and AI move to the center of the discipline.</div></div>
+          <div class="tl-item"><div class="yr">TODAY</div><div class="desc">Data Science powers ChatGPT, self-driving cars, recommendation engines, and predictive healthcare.</div></div>
+        </div>
+      </div>
+      <div class="reveal chart-box">
+        <div class="cap">Global Data Generated · Zettabytes / Year (Illustrative)</div>
+        <div id="chartGrowth" class="chart-svg-box"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Why important -->
+  <section class="slide" data-title="Why Important" data-bg="constellation" data-transition="rise">
+    <div class="slide-inner">
+      <div class="eyebrow reveal">03 — Motivation</div>
+      <h1 class="headline reveal">Why Does It Matter?</h1>
+      <p class="lede reveal" style="margin-bottom:1.2rem;">Billions of people generate data every second — every post, purchase, scan, and trip leaves a trace. Raw volume alone is noise; Data Science is what turns it into signal.</p>
+      <div class="stat-strip reveal">
+        <div class="stat-box"><div class="num"><span class="cnt" data-target="85" data-suffix="%">0</span></div><div class="lbl">of the world's data is unstructured and unusable without processing.</div></div>
+        <div class="stat-box"><div class="num"><span class="cnt" data-target="100" data-suffix="+">0</span></div><div class="lbl">zettabytes of data generated worldwide every year.</div></div>
+        <div class="stat-box"><div class="num"><span class="cnt" data-target="5" data-suffix="B+">0</span></div><div class="lbl">people online daily, each leaving a continuous data trail.</div></div>
+      </div>
+      <div class="grid grid-4 stagger" data-fly style="margin-top:1.6rem;">
+        <div class="card icon-card"><div class="icon-glyph"><i data-lucide="trending-up"></i></div><h3>Business Performance</h3><p>Sharper strategy from evidence, not guesswork.</p></div>
+        <div class="card icon-card"><div class="icon-glyph"><i data-lucide="users"></i></div><h3>Customer Behavior</h3><p>Predicting needs before they're stated.</p></div>
+        <div class="card icon-card"><div class="icon-glyph"><i data-lucide="shield-alert"></i></div><h3>Fraud Detection</h3><p>Catching anomalies hidden in the noise.</p></div>
+        <div class="card icon-card"><div class="icon-glyph"><i data-lucide="heart-pulse"></i></div><h3>Healthcare Outcomes</h3><p>Earlier diagnosis, better treatment paths.</p></div>
+      </div>
+      <p class="lede reveal" style="margin-top:1.4rem; font-size:.9rem;">Sources: social media, transactions, mobile apps, banking, GPS, health records, IoT devices — without Data Science, this volume has little practical value.</p>
+    </div>
+  </section>
+
+  <!-- 5. Components -->
+  <section class="slide" data-title="Components" data-bg="constellation" data-transition="perspective">
+    <div class="slide-inner">
+      <div class="eyebrow reveal">04 — Foundations</div>
+      <h1 class="headline reveal">Components of Data Science</h1>
+      <div class="grid grid-3 stagger" data-fly style="margin-top:1.6rem;">
+        <div class="card"><span class="node-num">01</span><h3>Mathematics</h3><p>Models relationships between variables and underlies analytical methods.</p></div>
+        <div class="card"><span class="node-num">02</span><h3>Statistics</h3><p>Summarizes data, tests hypotheses, and quantifies uncertainty.</p></div>
+        <div class="card"><span class="node-num">03</span><h3>Programming</h3><p>Python and R turn ideas into repeatable, automated workflows.</p></div>
+        <div class="card"><span class="node-num">04</span><h3>Machine Learning</h3><p>Algorithms that learn patterns from history instead of fixed rules.</p></div>
+        <div class="card"><span class="node-num">05</span><h3>Domain Knowledge</h3><p>Context that keeps solutions grounded in the real problem.</p></div>
+        <div class="card" style="background:linear-gradient(160deg, var(--pulse-dim), var(--panel));"><span class="node-num">= INSIGHT</span><h3>Combined, Not Separate</h3><p>Data Science is what happens where all five overlap.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Data types -->
+  <section class="slide" data-title="Types of Data" data-bg="constellation" data-transition="rise">
+    <div class="slide-inner">
+      <div class="eyebrow reveal">05 — Raw Material</div>
+      <h1 class="headline reveal">Types of Data</h1>
+      <div class="grid grid-3 stagger" data-fly style="margin-top:1.6rem;">
+        <div class="type-card structured">
+          <h3 style="font-family:var(--display); font-weight:600;">Structured</h3>
+          <div class="type-bar"><i style="width:90%; background:var(--pulse);"></i></div>
+          <p style="color:var(--mist); font-size:.9rem;">Rows and columns in relational databases — employee records, sales data, student information. Easy to search, analyze, and keep consistent.</p>
+        </div>
+        <div class="type-card semi">
+          <h3 style="font-family:var(--display); font-weight:600;">Semi-Structured</h3>
+          <div class="type-bar"><i style="width:55%; background:var(--spark);"></i></div>
+          <p style="color:var(--mist); font-size:.9rem;">Organized but not tabular — JSON, XML, and emails carry structure without rigid rows and columns.</p>
+        </div>
+        <div class="type-card unstructured">
+          <h3 style="font-family:var(--display); font-weight:600;">Unstructured</h3>
+          <div class="type-bar"><i style="width:100%; background:var(--coral);"></i></div>
+          <p style="color:var(--mist); font-size:.9rem;">No predefined format — images, video, audio, social posts, medical scans.</p>
+        </div>
+      </div>
+      <div class="reveal" style="margin-top:1.6rem; display:flex; align-items:baseline; gap:1rem;">
+        <span style="font-family:var(--display); font-weight:800; font-size:2.4rem; color:var(--coral);"><span class="cnt" data-target="80" data-suffix="–90%">0</span></span>
+        <span class="lede" style="margin:0;">of the world's data is unstructured — one of Data Science's biggest challenges.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Lifecycle -->
+  <section class="slide" data-title="Lifecycle" data-bg="rings" data-transition="zoom">
+    <div class="slide-inner lifecycle-wrap">
+      <div>
+        <div class="eyebrow reveal">06 — Process</div>
+        <h1 class="headline reveal">The Data Science Lifecycle</h1>
+        <p class="lede reveal" style="margin-bottom:1.4rem;">Nine sequential stages carry a problem from question to production — and back again. Hover a node, or watch it cycle automatically.</p>
+        <div class="lc-orbit-wrap reveal" id="lcOrbit"></div>
+      </div>
+      <div class="reveal">
+        <div class="lc-detail" id="lcDetail">
+          <div class="n">STAGE 01</div>
+          <div class="t">Problem Definition</div>
+          <div class="d">Identify the business or research question — e.g. predict customer churn.</div>
+        </div>
+        <div class="lc-dashes" id="lcDashes"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Machine Learning -->
+  <section class="slide" data-title="Machine Learning" data-bg="neural" data-transition="blur">
+    <div class="slide-inner">
+      <div class="eyebrow reveal">07 — Core Engine</div>
+      <h1 class="headline reveal">Machine Learning in Data Science</h1>
+      <p class="lede reveal" style="margin-bottom:1.2rem;">Instead of explicit rules, computers learn patterns directly from data. Three branches, three ways of learning.</p>
+      <div class="ml-tree-wrap reveal">
+        <div id="mlTree"></div>
+        <div class="ml-panels">
+          <div class="ml-panel open" data-branch="sup">
+            <h3><i class="sw" style="background:var(--pulse);"></i>Supervised</h3>
+            <p>Labeled data, known answers — price prediction, spam detection, diagnosis.</p>
+            <ul><li>Regression</li><li>Classification</li><li>Linear Regression</li><li>Logistic Regression</li><li>Decision Tree</li><li>Random Forest</li><li>SVM</li></ul>
+          </div>
+          <div class="ml-panel" data-branch="unsup">
+            <h3><i class="sw" style="background:var(--spark);"></i>Unsupervised</h3>
+            <p>Unlabeled data — segmentation, market basket analysis.</p>
+            <ul><li>Clustering</li><li>Association</li><li>K-Means</li><li>Hierarchical Clustering</li><li>DBSCAN</li></ul>
+          </div>
+          <div class="ml-panel" data-branch="rl">
+            <h3><i class="sw" style="background:var(--coral);"></i>Reinforcement</h3>
+            <p>Agents learn via reward and penalty — robotics, autonomous vehicles, game AI.</p>
+            <ul><li>Reward</li><li>Environment</li><li>Robotics</li><li>Autonomous Vehicles</li><li>Game-Playing AI</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Tools -->
+  <section class="slide" data-title="Tools" data-bg="constellation" data-transition="rise">
+    <div class="slide-inner split">
+      <div class="reveal">
+        <div class="eyebrow">08 — Toolkit</div>
+        <h1 class="headline">Popular Tools</h1>
+        <span class="node-num">LANGUAGES</span>
+        <div class="tool-cloud" style="margin-bottom:1.1rem;">
+          <span class="tool-chip"><span class="tool-mark" style="background:#f2c94c;">Py</span>Python</span><span class="tool-chip"><span class="tool-mark" style="background:#5b8def;">R</span>R</span><span class="tool-chip"><span class="tool-mark" style="background:#8b96ac;">SQ</span>SQL</span>
+        </div>
+        <span class="node-num">PYTHON LIBRARIES</span>
+        <div class="tool-cloud" style="margin-bottom:1.1rem;">
+          <span class="tool-chip"><span class="tool-mark" style="background:#8fd0ff;">Pd</span>Pandas</span><span class="tool-chip"><span class="tool-mark" style="background:#7ec9e0;">Np</span>NumPy</span><span class="tool-chip"><span class="tool-mark" style="background:#a6c8ff;">Mp</span>Matplotlib</span><span class="tool-chip"><span class="tool-mark" style="background:#9ad0c2;">Sb</span>Seaborn</span><span class="tool-chip"><span class="tool-mark" style="background:#f4a26a;">Sk</span>Scikit-learn</span><span class="tool-chip"><span class="tool-mark" style="background:#ff8a5c;">Tf</span>TensorFlow</span><span class="tool-chip"><span class="tool-mark" style="background:#ff8f6b;">Pt</span>PyTorch</span>
+        </div>
+        <span class="node-num">VISUALIZATION & CLOUD</span>
+        <div class="tool-cloud" style="margin-bottom:1.1rem;">
+          <span class="tool-chip"><span class="tool-mark" style="background:#f2c94c;">Bi</span>Power BI</span><span class="tool-chip"><span class="tool-mark" style="background:#ff6f6f;">Tb</span>Tableau</span><span class="tool-chip"><span class="tool-mark" style="background:#7fd67f;">Xl</span>Excel</span><span class="tool-chip"><span class="tool-mark" style="background:#f2a65a;">Aw</span>AWS</span><span class="tool-chip"><span class="tool-mark" style="background:#5b8def;">Az</span>Azure</span><span class="tool-chip"><span class="tool-mark" style="background:#f2c94c;">Gc</span>Google Cloud</span>
+        </div>
+        <span class="node-num">VERSION CONTROL</span>
+        <div class="tool-cloud">
+          <span class="tool-chip"><span class="tool-mark" style="background:#f2a65a;">Gt</span>Git</span><span class="tool-chip"><span class="tool-mark" style="background:#c9d1d9;">Hb</span>GitHub</span>
+        </div>
+      </div>
+      <div class="reveal chart-box">
+        <div class="cap">Language Usage Among Data Professionals (Illustrative)</div>
+        <div id="chartLang" class="chart-svg-box"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. Applications -->
+  <section class="slide" data-title="Applications" data-bg="map" data-transition="perspective">
+    <div class="slide-inner">
+      <div class="eyebrow reveal">09 — In Practice</div>
+      <h1 class="headline reveal">Real-World Applications</h1>
+      <p class="lede reveal" style="margin-bottom:.4rem;">Hover a pin to see how each industry puts Data Science to work.</p>
+      <div class="split" style="align-items:flex-start; gap:2rem;">
+        <div class="map-wrap reveal" id="worldMap" style="min-width:0;"></div>
+        <div class="reveal chart-box" style="align-self:center;">
+          <div class="cap">Industry Adoption Mix (Illustrative)</div>
+          <div id="chartAdoption" class="chart-svg-box"></div>
+        </div>
+      </div>
+      <span class="node-num reveal" style="display:block; margin-top:1.4rem;">CASE STUDIES</span>
+      <div class="grid grid-4 stagger case-grid" data-fly>
+        <div class="card case-card"><div class="case-logo" style="background:#e50914;">N</div><div><h3>Netflix</h3><p>Recommendation engine that personalizes every home screen.</p></div></div>
+        <div class="card case-card"><div class="case-logo" style="background:#ff9900;">A</div><div><h3>Amazon</h3><p>Product recommendations driving a large share of sales.</p></div></div>
+        <div class="card case-card"><div class="case-logo" style="background:#4285f4;">G</div><div><h3>Google Maps</h3><p>Real-time route optimization across billions of trips.</p></div></div>
+        <div class="card case-card"><div class="case-logo" style="background:#000000; border:1px solid var(--line);">U</div><div><h3>Uber</h3><p>Dynamic pricing that balances supply and demand instantly.</p></div></div>
+        <div class="card case-card"><div class="case-logo" style="background:#cc0000;">T</div><div><h3>Tesla</h3><p>Autonomous driving trained on fleet-scale sensor data.</p></div></div>
+        <div class="card case-card"><div class="case-logo" style="background:#1db954;">S</div><div><h3>Spotify</h3><p>Music recommendations tuned to individual listening habits.</p></div></div>
+        <div class="card case-card"><div class="case-logo" style="background:#412991;">O</div><div><h3>OpenAI</h3><p>Generative AI models trained on massive datasets.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. Advantages & Challenges -->
+  <section class="slide" data-title="Advantages & Challenges" data-bg="constellation" data-transition="rise">
+    <div class="slide-inner split">
+      <div class="reveal">
+        <div class="eyebrow">10 — Balance Sheet</div>
+        <h2 class="subhead" style="color:var(--pulse);">Advantages</h2>
+        <div class="chk-list">
+          <div class="chk-item"><span class="chk-mark good"><i data-lucide="check"></i></span>Evidence-based decision-making</div>
+          <div class="chk-item"><span class="chk-mark good"><i data-lucide="check"></i></span>Reveals hidden patterns and trends</div>
+          <div class="chk-item"><span class="chk-mark good"><i data-lucide="check"></i></span>Automates repetitive analysis</div>
+          <div class="chk-item"><span class="chk-mark good"><i data-lucide="check"></i></span>Increases operational efficiency</div>
+          <div class="chk-item"><span class="chk-mark good"><i data-lucide="check"></i></span>Enables personalization at scale</div>
+        </div>
+      </div>
+      <div class="reveal">
+        <h2 class="subhead" style="color:var(--coral);">Challenges</h2>
+        <div class="chk-list">
+          <div class="chk-item"><span class="chk-mark warn"><i data-lucide="x"></i></span>Poor or inconsistent data quality</div>
+          <div class="chk-item"><span class="chk-mark warn"><i data-lucide="x"></i></span>Privacy, security & ethical concerns</div>
+          <div class="chk-item"><span class="chk-mark warn"><i data-lucide="x"></i></span>Algorithmic bias</div>
+          <div class="chk-item"><span class="chk-mark warn"><i data-lucide="x"></i></span>High computational demands</div>
+          <div class="chk-item"><span class="chk-mark warn"><i data-lucide="x"></i></span>Shortage of skilled professionals</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. Careers -->
+  <section class="slide" data-title="Careers" data-bg="constellation" data-transition="blur">
+    <div class="slide-inner">
+      <div class="eyebrow reveal">11 — Opportunity</div>
+      <h1 class="headline reveal">Career Opportunities</h1>
+      <p class="lede reveal" style="margin-bottom:1rem;">One learning path, many destinations — here's a common route from first line of code to specialist role.</p>
+      <div class="split" style="align-items:flex-start; gap:2.4rem;">
+        <div class="reveal">
+          <div class="roadmap" id="roadmap">
+            <div class="rm-step" data-tag="START"><div class="tag">START</div><div class="lbl">Student</div></div>
+            <div class="rm-step" data-tag="LANGUAGE"><div class="tag">LANGUAGE</div><div class="lbl">Python</div></div>
+            <div class="rm-step" data-tag="QUERYING"><div class="tag">QUERYING</div><div class="lbl">SQL</div></div>
+            <div class="rm-step" data-tag="DATA"><div class="tag">DATA</div><div class="lbl">Pandas</div></div>
+            <div class="rm-step" data-tag="ANALYSIS"><div class="tag">ANALYSIS</div><div class="lbl">EDA</div></div>
+            <div class="rm-step" data-tag="MODELING"><div class="tag">MODELING</div><div class="lbl">Machine Learning</div></div>
+            <div class="rm-step" data-tag="PORTFOLIO"><div class="tag">PORTFOLIO</div><div class="lbl">Projects</div></div>
+            <div class="rm-step" data-tag="ROLE"><div class="tag">ROLE · ENTRY</div><div class="lbl">Data Analyst</div></div>
+            <div class="rm-step" data-tag="ROLE"><div class="tag">ROLE · CORE</div><div class="lbl">Data Scientist</div></div>
+            <div class="rm-step" data-tag="ROLE"><div class="tag">ROLE · GROWTH</div><div class="lbl">AI Engineer</div></div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="chart-box" style="margin-bottom:1.2rem;">
+            <div class="cap">Core Skill Profile (Illustrative)</div>
+            <div id="chartSkills" class="chart-svg-box"></div>
+          </div>
+          <div class="skill-tags">
+            <span class="tool-chip">Python</span><span class="tool-chip">SQL</span><span class="tool-chip">Statistics</span><span class="tool-chip">Machine Learning</span><span class="tool-chip">Data Visualization</span><span class="tool-chip">Communication</span><span class="tool-chip">Problem-Solving</span>
+          </div>
+        </div>
+      </div>
+      <details style="margin-top:1.2rem;" class="reveal">
+        <summary style="cursor:pointer; font-family:var(--mono); font-size:.75rem; color:var(--mist); letter-spacing:.08em;">MORE ROLES TO EXPLORE</summary>
+        <div style="margin-top:.8rem;">
+          <div class="career-row"><span class="role">Machine Learning Engineer</span><span class="pill">CORE</span></div>
+          <div class="career-row"><span class="role">Data Engineer</span><span class="pill">CORE</span></div>
+          <div class="career-row"><span class="role">Business Intelligence Analyst</span><span class="pill">ENTRY</span></div>
+          <div class="career-row"><span class="role">Research Scientist</span><span class="pill">ADVANCED</span></div>
+          <div class="career-row"><span class="role">Analytics Consultant</span><span class="pill">GROWTH</span></div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- 13. Future -->
+  <section class="slide" data-title="Future" data-bg="mesh" data-transition="zoom">
+    <div class="slide-inner split">
+      <div class="reveal">
+        <div class="eyebrow">12 — What's Next</div>
+        <h1 class="headline">The Future of Data Science</h1>
+        <p class="lede">Driven by advances in AI and automation, the next wave makes intelligent systems more accessible, transparent, and impactful.</p>
+      </div>
+      <div class="reveal">
+        <div class="trend-orbit" id="trendOrbit"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. Conclusion -->
+  <section class="slide" data-title="Conclusion" data-bg="particles" data-transition="rise">
+    <div class="slide-inner">
+      <div class="eyebrow reveal">13 — Synthesis</div>
+      <h1 class="headline reveal">Conclusion</h1>
+      <p class="lede reveal" style="max-width:74ch; font-size:1.1rem;">Data Science has transformed how organizations understand and use information. By combining data, statistics, programming, and machine learning, it enables informed decisions and drives innovation across healthcare, finance, education, manufacturing, and transportation.</p>
+      <p class="lede reveal" style="max-width:74ch; margin-top:1rem;">As the volume of data keeps growing, so will the demand for skilled data professionals — making Data Science one of the most influential fields of the coming decade.</p>
+    </div>
+  </section>
+
+  <!-- 15. Thank you -->
+  <section class="slide closing" data-title="Thank You" data-bg="lights" data-transition="zoom">
+    <div class="slide-inner">
+      <div class="eyebrow reveal" style="justify-content:center;">Thank You</div>
+      <p class="closing-quote reveal">"Data is a valuable resource, but its true power lies in the insights we extract from it."</p>
+      <h1 class="headline reveal" style="font-size:clamp(2rem,5vw,3.4rem);">Questions &amp; Answers</h1>
+    </div>
+  </section>
+
+</div>
+
+<div id="chrome">
+  <div class="navbtns">
+    <button class="navbtn" id="prevBtn" aria-label="Previous slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button class="navbtn" id="nextBtn" aria-label="Next slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+  <div class="dotrail" id="dotrail"></div>
+  <div class="counter"><span class="cur" id="curNum">01</span> / <span id="totNum">15</span></div>
+</div>
+
+<script>
+/* ============ Ambient constellation network ============ */
+(function(){
+  const canvas = document.getElementById('network');
+  const ctx = canvas.getContext('2d');
+  let w,h,nodes;
+  const NODE_COUNT_BASE = 70;
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  function initNodes(){
+    const count = Math.round(NODE_COUNT_BASE * (w*h)/(1440*900));
+    nodes = Array.from({length: Math.max(30, count)}, () => ({
+      x: Math.random()*w,
+      y: Math.random()*h,
+      vx: (Math.random()-0.5)*0.25,
+      vy: (Math.random()-0.5)*0.25,
+      r: Math.random()*1.6+0.6
+    }));
+  }
+  function step(){
+    ctx.clearRect(0,0,w,h);
+    for(const n of nodes){
+      n.x += n.vx; n.y += n.vy;
+      if(n.x<0||n.x>w) n.vx*=-1;
+      if(n.y<0||n.y>h) n.vy*=-1;
+    }
+    const maxDist = 130;
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a=nodes[i], b=nodes[j];
+        const dx=a.x-b.x, dy=a.y-b.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist<maxDist){
+          ctx.strokeStyle = `rgba(91,141,239,${(1-dist/maxDist)*0.18})`;
+          ctx.lineWidth=1;
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+          ctx.stroke();
+        }
+      }
+    }
+    for(const n of nodes){
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(242,166,90,0.55)';
+      ctx.fill();
+    }
+    requestAnimationFrame(step);
+  }
+  window.addEventListener('resize', ()=>{resize(); initNodes();});
+  resize(); initNodes(); step();
+})();
+
+/* ============ Trend orbit (Future slide) ============ */
+(function(){
+  const el = document.getElementById('trendOrbit');
+  const trends = ['Generative AI','Explainable AI','Edge AI','AutoML','Real-Time Analytics','Responsible AI','Quantum ML','Digital Twins'];
+  const size = 420;
+  let svg = `<svg viewBox="0 0 ${size} ${size}" width="100%" height="100%">`;
+  const cx=size/2, cy=size/2, r=150;
+  svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#232b3f" stroke-width="1"/>`;
+  svg += `<circle cx="${cx}" cy="${cy}" r="46" fill="rgba(91,141,239,0.12)" stroke="#5b8def" stroke-width="1.5"/>`;
+  svg += `<text x="${cx}" y="${cy+5}" text-anchor="middle" fill="#f5f7fa" font-family="Sora" font-weight="600" font-size="14">AI &amp; DS</text>`;
+  trends.forEach((t,i)=>{
+    const ang = (i/trends.length)*Math.PI*2 - Math.PI/2;
+    const x = cx + r*Math.cos(ang);
+    const y = cy + r*Math.sin(ang);
+    svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#5b8def" stroke-opacity="0.25" stroke-width="1"/>`;
+    const labelX = cx + (r+2)*Math.cos(ang);
+    const labelY = cy + (r+2)*Math.sin(ang);
+    svg += `<g class="orbit-node" style="animation-delay:${i*0.15}s">
+      <circle cx="${x}" cy="${y}" r="5" fill="#f2a65a"/>
+    </g>`;
+    const anchor = Math.cos(ang) > 0.3 ? 'start' : (Math.cos(ang) < -0.3 ? 'end' : 'middle');
+    const dx = Math.cos(ang)*14;
+    const dy = Math.sin(ang)*14;
+    svg += `<text x="${labelX+dx}" y="${labelY+dy}" text-anchor="${anchor}" fill="#8b96ac" font-family="JetBrains Mono" font-size="10">${t}</text>`;
+  });
+  svg += `</svg>`;
+  el.innerHTML = svg;
+})();
+
+/* ============ Deck engine ============ */
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+  let animating = false;
+
+  const dotrail = document.getElementById('dotrail');
+  slides.forEach((s,i)=>{
+    const b = document.createElement('button');
+    b.classList.add('ripple-el');
+    if(i===0) b.classList.add('active');
+    b.addEventListener('click', ()=>goTo(i));
+    dotrail.appendChild(b);
+  });
+  const dots = Array.from(dotrail.children);
+
+  const curNum = document.getElementById('curNum');
+  const totNum = document.getElementById('totNum');
+  const progress = document.getElementById('progress');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  totNum.textContent = String(total).padStart(2,'0');
+
+  function render(){
+    slides.forEach((s,i)=> s.classList.toggle('active', i===current));
+    dots.forEach((d,i)=> d.classList.toggle('active', i===current));
+    curNum.textContent = String(current+1).padStart(2,'0');
+    progress.style.width = ((current+1)/total*100) + '%';
+    prevBtn.disabled = current===0;
+    nextBtn.disabled = current===total-1;
+
+    const active = slides[current];
+    document.body.dataset.bg = active.dataset.bg || 'constellation';
+    if(window.Keynote) window.Keynote.onSlide(active, active.dataset.title);
+    const announcer = document.getElementById('slideAnnouncer');
+    if(announcer) announcer.textContent = `Slide ${current+1} of ${total}: ${active.dataset.title}`;
+  }
+
+  function goTo(i){
+    if(i<0||i>=total||i===current||animating) return;
+    animating = true;
+    current = i;
+    render();
+    setTimeout(()=> animating=false, 400);
+  }
+
+  prevBtn.addEventListener('click', ()=>goTo(current-1));
+  nextBtn.addEventListener('click', ()=>goTo(current+1));
+
+  window.addEventListener('keydown', (e)=>{
+    if(['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)){ e.preventDefault(); goTo(current+1); }
+    if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); goTo(current-1); }
+    if(e.key==='Home') goTo(0);
+    if(e.key==='End') goTo(total-1);
+  });
+
+  // touch swipe
+  let touchX=null;
+  window.addEventListener('touchstart', e=> touchX = e.touches[0].clientX, {passive:true});
+  window.addEventListener('touchend', e=>{
+    if(touchX===null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(dx) > 50) goTo(current + (dx<0 ? 1 : -1));
+    touchX = null;
+  }, {passive:true});
+
+  // fullscreen toggle
+  document.getElementById('fskip').addEventListener('click', ()=>{
+    if(!document.fullscreenElement){ document.documentElement.requestFullscreen().catch(()=>{}); }
+    else { document.exitFullscreen(); }
+  });
+
+  render();
+})();
+
+/* =====================================================================
+   PREMIUM UPGRADE ENGINE
+   Icons · cursor glow · ambient particles · count-up stats · charts ·
+   lifecycle orbit · ML tree · world map · roadmap · confetti · parallax
+   ===================================================================== */
+(function(){
+  const seen = {}; // one-time-init guard per feature
+
+  /* ---------- Self-contained icon system (no external deps) ---------- */
+  const ICONS = {
+    'trending-up': 'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
+    'users': 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
+    'shield-alert': 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM12 8v4M12 16h.01',
+    'heart-pulse': 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8zM3.5 12H7l1.5-3 2 5 1.5-3H17',
+    'code-2': 'M18 16l4-4-4-4M6 8l-4 4 4 4M14.5 4l-5 16',
+    'database': 'M12 3C7.58 3 4 4.34 4 6s3.58 3 8 3 8-1.34 8-3-3.58-3-8-3zM4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6',
+    'bar-chart-3': 'M3 3v18h18M8 17V9M13 17V5M18 17v-7',
+    'cloud': 'M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.4-1.5A5 5 0 0 0 6.5 19h11z',
+    'git-branch': 'M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9',
+    'github': 'M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21',
+    'check': 'M20 6L9 17l-5-5',
+    'x': 'M18 6L6 18M6 6l12 12'
+  };
+  function svgIcon(name){
+    const d = ICONS[name];
+    if(!d) return '';
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">`+
+      d.split(/(?=M)/).map(seg=>`<path d="${seg.trim()}"/>`).join('') + `</svg>`;
+  }
+  function initIcons(){
+    document.querySelectorAll('[data-lucide]').forEach(el=>{
+      if(el.dataset.iconDone) return;
+      el.dataset.iconDone = '1';
+      el.innerHTML = svgIcon(el.dataset.lucide);
+    });
+  }
+
+  /* ---------- Cursor glow + subtle parallax ---------- */
+  function initCursor(){
+    const glow = document.getElementById('cursorGlow');
+    let raf=null, mx=innerWidth/2, my=innerHeight/2;
+    window.addEventListener('mousemove', (e)=>{
+      document.body.classList.add('has-mouse');
+      mx = e.clientX; my = e.clientY;
+      if(!raf){
+        raf = requestAnimationFrame(()=>{
+          glow.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
+          const px = (mx/innerWidth - 0.5), py = (my/innerHeight - 0.5);
+          document.querySelectorAll('.title-slide.active .title-glow').forEach(g=>{
+            g.style.transform = `translate(calc(-50% + ${px*24}px), calc(-50% + ${py*24}px))`;
+          });
+          document.querySelectorAll('.slide.active .lc-orbit-wrap, .slide.active .trend-orbit, .slide.active #mlTree svg').forEach(el=>{
+            el.style.transform = `rotate(${px*1.4}deg)`;
+          });
+          raf = null;
+        });
+      }
+    });
+  }
+
+  /* ---------- Ripple micro-interaction ---------- */
+  function initRipple(){
+    document.querySelectorAll('.navbtn, .dotrail button').forEach(el=> el.classList.add('ripple-el'));
+    document.addEventListener('click', (e)=>{
+      const el = e.target.closest('.ripple-el');
+      if(!el) return;
+      const r = el.getBoundingClientRect();
+      const ink = document.createElement('span');
+      const size = Math.max(r.width, r.height) * 1.6;
+      ink.className = 'ripple-ink';
+      ink.style.width = ink.style.height = size+'px';
+      ink.style.left = (e.clientX - r.left - size/2)+'px';
+      ink.style.top = (e.clientY - r.top - size/2)+'px';
+      el.appendChild(ink);
+      setTimeout(()=> ink.remove(), 650);
+    });
+  }
+
+  /* ---------- Ambient particle / bokeh generators ---------- */
+  function spawnParticles(container, count, opts){
+    if(container.dataset.spawned) return;
+    container.dataset.spawned = '1';
+    for(let i=0;i<count;i++){
+      const el = document.createElement('i');
+      const size = opts.minSize + Math.random()*(opts.maxSize-opts.minSize);
+      el.style.width = el.style.height = size+'px';
+      el.style.left = (Math.random()*100)+'%';
+      if(opts.top) el.style.top = (Math.random()*100)+'%';
+      el.style.setProperty('--drift', (Math.random()*80-40)+'px');
+      el.style.animationDelay = (Math.random()*(opts.duration||10))+'s';
+      el.style.animationDuration = ((opts.duration||10) + Math.random()*6)+'s';
+      if(opts.colors){ el.style.background = opts.colors[i % opts.colors.length]; }
+      container.appendChild(el);
+    }
+  }
+  function initAmbientParticles(){
+    spawnParticles(document.getElementById('ambParticles'), 26, {minSize:2,maxSize:5,duration:12});
+    spawnParticles(document.getElementById('ambLights'), 10, {minSize:120,maxSize:220,duration:9,top:true,
+      colors:['var(--pulse)','var(--spark)','var(--coral)']});
+  }
+  function initTitleParticles(){
+    const wrap = document.getElementById('titleParticles');
+    if(wrap.dataset.spawned) return;
+    wrap.dataset.spawned='1';
+    for(let i=0;i<18;i++){
+      const el = document.createElement('i');
+      el.style.left = (Math.random()*100)+'%';
+      el.style.top = (Math.random()*100)+'%';
+      el.style.setProperty('--fx', (Math.random()*30-15)+'px');
+      el.style.setProperty('--fy', (Math.random()*-40-10)+'px');
+      el.style.animationDelay = (Math.random()*7)+'s';
+      wrap.appendChild(el);
+    }
+  }
+
+  /* ---------- Count-up stats ---------- */
+  function runCountUp(root){
+    root.querySelectorAll('.cnt').forEach(el=>{
+      if(el.dataset.done) return;
+      el.dataset.done = '1';
+      const target = parseFloat(el.dataset.target);
+      const suffix = el.dataset.suffix || '';
+      const dur = 1400;
+      const start = performance.now();
+      function tick(now){
+        const p = Math.min(1, (now-start)/dur);
+        const eased = 1 - Math.pow(1-p, 3);
+        el.textContent = Math.round(target*eased) + suffix;
+        if(p<1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  /* ---------- Charts — hand-built SVG, no external library ---------- */
+  const CW = 420, CH = 190, PAD = {t:14,r:14,b:26,l:34};
+  function animateIn(svgEl){
+    svgEl.querySelectorAll('.cv-draw').forEach((el,i)=>{
+      const len = el.getTotalLength ? el.getTotalLength() : 0;
+      if(len){ el.style.strokeDasharray = len; el.style.strokeDashoffset = len;
+        el.style.transition = `stroke-dashoffset 1s cubic-bezier(.22,.61,.36,1) ${i*0.05}s`;
+        requestAnimationFrame(()=> requestAnimationFrame(()=> el.style.strokeDashoffset = 0));
+      }
+    });
+    svgEl.querySelectorAll('.cv-grow').forEach((el,i)=>{
+      el.style.transformBox='fill-box'; el.style.transformOrigin='bottom';
+      el.style.transform='scaleY(0)'; el.style.transition=`transform .7s cubic-bezier(.22,.61,.36,1) ${i*0.06}s`;
+      requestAnimationFrame(()=> requestAnimationFrame(()=> el.style.transform='scaleY(1)'));
+    });
+    svgEl.querySelectorAll('.cv-pop').forEach((el,i)=>{
+      el.style.transformBox='fill-box'; el.style.transformOrigin='center';
+      el.style.opacity=0; el.style.transform='scale(.4)';
+      el.style.transition=`opacity .4s ease ${i*0.08}s, transform .4s cubic-bezier(.34,1.56,.64,1) ${i*0.08}s`;
+      requestAnimationFrame(()=> requestAnimationFrame(()=>{ el.style.opacity=1; el.style.transform='scale(1)'; }));
+    });
+  }
+
+  function initGrowthChart(){
+    const box = document.getElementById('chartGrowth'); if(!box || box.dataset.done) return; box.dataset.done='1';
+    const labels=['1960s','1980s','1990s','2000s','2010s','Today'];
+    const values=[0.01,0.3,2,44,2000,181000];
+    const logs = values.map(v=>Math.log10(Math.max(v,0.001)));
+    const lo=Math.min(...logs), hi=Math.max(...logs);
+    const x = i => PAD.l + i*((CW-PAD.l-PAD.r)/(labels.length-1));
+    const y = v => CH-PAD.b - ((Math.log10(v)-lo)/(hi-lo))*(CH-PAD.t-PAD.b);
+    const pts = values.map((v,i)=>[x(i),y(v)]);
+    const line = pts.map((p,i)=> (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+    const area = line + ` L${x(values.length-1)},${CH-PAD.b} L${x(0)},${CH-PAD.b} Z`;
+    let svg = `<svg viewBox="0 0 ${CW} ${CH}">`;
+    svg += `<line x1="${PAD.l}" y1="${CH-PAD.b}" x2="${CW-PAD.r}" y2="${CH-PAD.b}" stroke="#232b3f"/>`;
+    svg += `<path d="${area}" fill="url(#growthFade)" opacity=".35"/>`;
+    svg += `<defs><linearGradient id="growthFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5b8def" stop-opacity=".6"/><stop offset="100%" stop-color="#5b8def" stop-opacity="0"/></linearGradient></defs>`;
+    svg += `<path class="cv-draw" d="${line}" fill="none" stroke="#5b8def" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    pts.forEach((p,i)=> svg += `<circle class="cv-pop" cx="${p[0]}" cy="${p[1]}" r="4" fill="#f2a65a"/>`);
+    labels.forEach((l,i)=> svg += `<text x="${x(i)}" y="${CH-8}" font-size="9" text-anchor="middle">${l}</text>`);
+    svg += `</svg>`;
+    box.innerHTML = svg;
+    animateIn(box.querySelector('svg'));
+  }
+
+  function initLangChart(){
+    const box = document.getElementById('chartLang'); if(!box || box.dataset.done) return; box.dataset.done='1';
+    const labels=['Python','SQL','R','Java'], values=[68,52,20,15], colors=['#5b8def','#f2a65a','#ff6f6f','#8b96ac'];
+    const max = 75;
+    const bw = (CW-PAD.l-PAD.r)/labels.length;
+    let svg = `<svg viewBox="0 0 ${CW} ${CH}">`;
+    svg += `<line x1="${PAD.l}" y1="${CH-PAD.b}" x2="${CW-PAD.r}" y2="${CH-PAD.b}" stroke="#232b3f"/>`;
+    values.forEach((v,i)=>{
+      const h = (v/max)*(CH-PAD.t-PAD.b);
+      const bx = PAD.l + i*bw + bw*0.22, bwid = bw*0.56;
+      svg += `<rect class="cv-grow" x="${bx.toFixed(1)}" y="${(CH-PAD.b-h).toFixed(1)}" width="${bwid.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="${colors[i]}"/>`;
+      svg += `<text x="${(bx+bwid/2).toFixed(1)}" y="${(CH-PAD.b-h-6).toFixed(1)}" font-size="9" text-anchor="middle" fill="#f5f7fa">${v}%</text>`;
+      svg += `<text x="${(bx+bwid/2).toFixed(1)}" y="${CH-8}" font-size="9" text-anchor="middle">${labels[i]}</text>`;
+    });
+    svg += `</svg>`;
+    box.innerHTML = svg;
+    animateIn(box.querySelector('svg'));
+  }
+
+  function initAdoptionChart(){
+    const box = document.getElementById('chartAdoption'); if(!box || box.dataset.done) return; box.dataset.done='1';
+    const labels=['Healthcare','Finance','Retail','Transport','Other'];
+    const values=[22,24,18,14,22], colors=['#5b8def','#f2a65a','#ff6f6f','#8b96ac','#3a4560'];
+    const size=190, cx=88, cy=95, r=64, r2=38;
+    let total = values.reduce((a,b)=>a+b,0), ang=-Math.PI/2;
+    let svg = `<svg viewBox="0 0 ${size+130} ${size}">`;
+    values.forEach((v,i)=>{
+      const a0=ang, a1=ang + (v/total)*Math.PI*2; ang=a1;
+      const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0);
+      const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+      const xi0=cx+r2*Math.cos(a1), yi0=cy+r2*Math.sin(a1);
+      const xi1=cx+r2*Math.cos(a0), yi1=cy+r2*Math.sin(a0);
+      const large = (a1-a0) > Math.PI ? 1 : 0;
+      const d = `M${x0},${y0} A${r},${r} 0 ${large} 1 ${x1},${y1} L${xi0},${yi0} A${r2},${r2} 0 ${large} 0 ${xi1},${yi1} Z`;
+      svg += `<path class="cv-pop" d="${d}" fill="${colors[i]}"/>`;
+    });
+    labels.forEach((l,i)=>{
+      const ly = 18 + i*17;
+      svg += `<rect x="${size+8}" y="${ly-8}" width="9" height="9" rx="2" fill="${colors[i]}"/>`;
+      svg += `<text x="${size+22}" y="${ly}" font-size="9">${l} · ${values[i]}%</text>`;
+    });
+    svg += `</svg>`;
+    box.innerHTML = svg;
+    animateIn(box.querySelector('svg'));
+  }
+
+  function initSkillsChart(){
+    const box = document.getElementById('chartSkills'); if(!box || box.dataset.done) return; box.dataset.done='1';
+    const labels=['Python','SQL','Statistics','ML','Communication'], values=[85,75,70,80,65];
+    const size=200, cx=size/2, cy=size/2-6, R=64, n=labels.length;
+    const angFor = i => -Math.PI/2 + i*(Math.PI*2/n);
+    let svg = `<svg viewBox="0 0 ${size} ${size}">`;
+    [0.25,0.5,0.75,1].forEach(f=>{
+      const ring = Array.from({length:n},(_,i)=>{
+        const a=angFor(i); return `${(cx+R*f*Math.cos(a)).toFixed(1)},${(cy+R*f*Math.sin(a)).toFixed(1)}`;
+      }).join(' ');
+      svg += `<polygon points="${ring}" fill="none" stroke="#232b3f" stroke-width="1"/>`;
+    });
+    labels.forEach((l,i)=>{
+      const a=angFor(i);
+      svg += `<line x1="${cx}" y1="${cy}" x2="${(cx+R*Math.cos(a)).toFixed(1)}" y2="${(cy+R*Math.sin(a)).toFixed(1)}" stroke="#232b3f" stroke-width="1"/>`;
+      const lx=cx+(R+16)*Math.cos(a), ly=cy+(R+14)*Math.sin(a);
+      const anchor = Math.cos(a)>0.3?'start':(Math.cos(a)<-0.3?'end':'middle');
+      svg += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-size="8.5" text-anchor="${anchor}">${l}</text>`;
+    });
+    const poly = values.map((v,i)=>{
+      const a=angFor(i), f=v/100;
+      return `${(cx+R*f*Math.cos(a)).toFixed(1)},${(cy+R*f*Math.sin(a)).toFixed(1)}`;
+    }).join(' ');
+    svg += `<polygon class="cv-pop" points="${poly}" fill="#5b8def" fill-opacity=".28" stroke="#5b8def" stroke-width="2"/>`;
+    values.forEach((v,i)=>{
+      const a=angFor(i), f=v/100;
+      svg += `<circle class="cv-pop" cx="${(cx+R*f*Math.cos(a)).toFixed(1)}" cy="${(cy+R*f*Math.sin(a)).toFixed(1)}" r="3" fill="#f2a65a"/>`;
+    });
+    svg += `</svg>`;
+    box.innerHTML = svg;
+    animateIn(box.querySelector('svg'));
+  }
+
+  /* ---------- Lifecycle circular orbit ---------- */
+  const lcStages = [
+    {t:'Problem Definition', d:'Identify the business or research question — e.g. predict customer churn.'},
+    {t:'Data Collection', d:'Gather data from databases, APIs, sensors, websites, and surveys.'},
+    {t:'Data Cleaning', d:'Remove duplicates, fix inconsistencies, handle missing values.'},
+    {t:'Exploratory Analysis', d:'Summary statistics and visuals reveal trends and outliers.'},
+    {t:'Feature Engineering', d:'Create or transform variables to strengthen the model.'},
+    {t:'Model Building', d:'Apply ML algorithms to learn patterns from history.'},
+    {t:'Model Evaluation', d:'Accuracy, precision, recall, F1, ROC-AUC, MSE.'},
+    {t:'Deployment', d:'Put the trained model into real-world use.'},
+    {t:'Monitoring', d:'Track performance and retrain as new data arrives.'}
+  ];
+  let lcTimer=null, lcIndex=0;
+  /* ---------- Evolution slide: sequenced timeline reveal ---------- */
+  let tlTimers = [];
+  function playTimelineSequence(section){
+    const container = section.querySelector('.timeline');
+    if(!container) return;
+    tlTimers.forEach(id=>clearTimeout(id));
+    tlTimers = [];
+    const items = Array.from(container.querySelectorAll('.tl-item'));
+    const progress = container.querySelector('.tl-progress');
+    items.forEach(it=> it.classList.remove('tl-active','tl-done'));
+    if(progress) progress.style.height = '0px';
+    const stepDelay = 900; // ms between milestones
+    const startDelay = 250; // let the slide transition settle first
+    items.forEach((item,i)=>{
+      const id = setTimeout(()=>{
+        items.forEach((other,j)=>{
+          if(j<i){ other.classList.remove('tl-active'); other.classList.add('tl-done'); }
+        });
+        item.classList.remove('tl-done');
+        item.classList.add('tl-active');
+        if(progress) progress.style.height = (item.offsetTop + 9) + 'px';
+      }, startDelay + i*stepDelay);
+      tlTimers.push(id);
+    });
+  }
+
+  function buildLifecycle(){
+    const wrap = document.getElementById('lcOrbit'); if(!wrap || wrap.dataset.done) return; wrap.dataset.done='1';
+    const size=380, cx=size/2, cy=size/2, r=150;
+    let svg = `<svg viewBox="0 0 ${size} ${size}"><circle class="lc-track" cx="${cx}" cy="${cy}" r="${r}"/>`;
+    svg += `<text class="lc-center-label" x="${cx}" y="${cy-4}">DATA</text><text class="lc-center-label" x="${cx}" y="${cy+14}">SCIENCE</text>`;
+    lcStages.forEach((s,i)=>{
+      const ang = (i/lcStages.length)*Math.PI*2 - Math.PI/2;
+      const x = cx + r*Math.cos(ang), y = cy + r*Math.sin(ang);
+      const anchor = Math.cos(ang) > 0.35 ? 'start' : (Math.cos(ang) < -0.35 ? 'end' : 'middle');
+      const lx = cx + (r+24)*Math.cos(ang), ly = cy + (r+24)*Math.sin(ang);
+      svg += `<g class="lc-node" data-i="${i}"><circle class="dot" cx="${x}" cy="${y}" r="9"/>
+        <text x="${x}" y="${y+3}" text-anchor="middle" style="fill:#f5f7fa; font-family:JetBrains Mono; font-size:8px;">${String(i+1).padStart(2,'0')}</text>
+        <text class="map-label" x="${lx}" y="${ly}" text-anchor="${anchor}">${s.t}</text></g>`;
+    });
+    svg += `</svg>`;
+    wrap.innerHTML = svg;
+
+    const dashes = document.getElementById('lcDashes');
+    dashes.innerHTML = lcStages.map(()=>'<i></i>').join('');
+
+    const nodes = wrap.querySelectorAll('.lc-node');
+    const detail = document.getElementById('lcDetail');
+    function activate(i){
+      lcIndex = i;
+      nodes.forEach(n=> n.classList.toggle('lit', +n.dataset.i === i));
+      Array.from(dashes.children).forEach((d,idx)=> d.classList.toggle('done', idx<=i));
+      detail.innerHTML = `<div class="n">STAGE ${String(i+1).padStart(2,'0')}</div><div class="t">${lcStages[i].t}</div><div class="d">${lcStages[i].d}</div>`;
+    }
+    nodes.forEach(n=> n.addEventListener('mouseenter', ()=>{ clearInterval(lcTimer); activate(+n.dataset.i); }));
+    nodes.forEach(n=> n.addEventListener('click', ()=>{ clearInterval(lcTimer); activate(+n.dataset.i); }));
+    activate(0);
+    startLifecycleCycle();
+  }
+  function startLifecycleCycle(){
+    clearInterval(lcTimer);
+    const wrap = document.getElementById('lcOrbit'); if(!wrap) return;
+    lcTimer = setInterval(()=>{
+      lcIndex = (lcIndex+1) % lcStages.length;
+      wrap.querySelectorAll('.lc-node').forEach(n=>{
+        if(+n.dataset.i === lcIndex){ n.classList.add('lit'); } else { n.classList.remove('lit'); }
+      });
+      const dashes = document.getElementById('lcDashes');
+      Array.from(dashes.children).forEach((d,idx)=> d.classList.toggle('done', idx<=lcIndex));
+      const detail = document.getElementById('lcDetail');
+      detail.innerHTML = `<div class="n">STAGE ${String(lcIndex+1).padStart(2,'0')}</div><div class="t">${lcStages[lcIndex].t}</div><div class="d">${lcStages[lcIndex].d}</div>`;
+    }, 2600);
+  }
+
+  /* ---------- Machine Learning tree ---------- */
+  function buildMlTree(){
+    const wrap = document.getElementById('mlTree'); if(!wrap || wrap.dataset.done) return; wrap.dataset.done='1';
+    const w=460,h=360;
+    const root = {x:w/2, y:34};
+    const branches = [ {x:90,y:210,c:'b1',label:'Supervised', key:'sup'}, {x:w/2,y:250,c:'b2',label:'Unsupervised', key:'unsup'}, {x:w-90,y:210,c:'b3',label:'Reinforcement', key:'rl'} ];
+    let svg = `<svg viewBox="0 0 ${w} ${h}">`;
+    svg += `<text class="ml-root-text" x="${root.x}" y="${root.y}">MACHINE LEARNING</text>`;
+    branches.forEach(b=>{
+      const midY = (root.y+30+b.y)/2;
+      svg += `<path class="ml-branch-path ${b.c}" d="M${root.x},${root.y+14} C ${root.x},${midY} ${b.x},${midY} ${b.x},${b.y-24}"/>`;
+      svg += `<g class="ml-node-pop"><circle cx="${b.x}" cy="${b.y}" r="30" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+        <text class="ml-cat-text" x="${b.x}" y="${b.y+4}" fill="#f5f7fa" data-key="${b.key}" style="cursor:pointer;">${b.label}</text></g>`;
+    });
+    svg += `</svg>`;
+    wrap.innerHTML = svg;
+
+    wrap.querySelectorAll('.ml-cat-text').forEach(t=>{
+      t.addEventListener('click', ()=>{
+        document.querySelectorAll('.ml-panel').forEach(p=> p.classList.toggle('open', p.dataset.branch===t.dataset.key));
+      });
+    });
+    document.querySelectorAll('.ml-panel').forEach(p=>{
+      p.addEventListener('click', ()=>{
+        document.querySelectorAll('.ml-panel').forEach(x=> x.classList.toggle('open', x===p));
+      });
+    });
+  }
+
+  /* ---------- World map with pins ---------- */
+  const mapPins = [
+    {x:230,y:160,t:'Healthcare',d:'Disease prediction, drug discovery, medical imaging.'},
+    {x:270,y:150,t:'Finance',d:'Credit scoring, fraud detection, risk analysis.'},
+    {x:190,y:190,t:'Retail',d:'Product recommendations, inventory forecasting.'},
+    {x:150,y:130,t:'Transportation',d:'Traffic prediction, route optimization.'},
+    {x:600,y:180,t:'Education',d:'Performance prediction, personalized learning.'},
+    {x:520,y:130,t:'Entertainment',d:'Movie and music recommendations.'}
+  ];
+  function buildWorldMap(){
+    const wrap = document.getElementById('worldMap'); if(!wrap || wrap.dataset.done) return; wrap.dataset.done='1';
+    const w=760, h=380;
+    const pinColors = ['#5b8def','#f2a65a','#ff6f6f','#7bd67f','#c58bf2','#5be0d8'];
+    // stylised abstract continents (flat blobs, not literal geography) —
+    // rendered as a layered "glass globe": base gradient + soft sheen highlight
+    // + a faint dot grid, all pure SVG/CSS so it paints correctly on the very
+    // first frame with no animation or script needed to finish first.
+    const landPaths = [
+      'M60,120 C100,90 180,95 210,130 C240,160 220,210 170,220 C120,230 60,210 45,170 C35,145 40,135 60,120 Z',
+      'M150,240 C180,230 210,250 205,290 C200,330 160,340 140,310 C125,285 130,255 150,240 Z',
+      'M330,90 C400,70 470,90 480,140 C490,190 440,220 380,215 C330,210 300,170 300,140 C300,115 310,100 330,90 Z',
+      'M470,230 C520,215 560,240 550,280 C540,320 480,330 450,300 C430,278 440,245 470,230 Z',
+      'M560,90 C640,70 720,100 730,150 C740,200 680,230 610,220 C560,213 540,160 550,120 C553,108 555,98 560,90 Z',
+      'M650,250 C690,240 720,260 710,290 C702,315 665,320 645,300 C632,285 635,262 650,250 Z'
+    ];
+    let dots = '';
+    for(let gy=20; gy<h; gy+=26){
+      for(let gx=20; gx<w; gx+=26){
+        dots += `<circle class="map-grid-dot" cx="${gx}" cy="${gy}" r="1.1"/>`;
+      }
+    }
+    let svg = `<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="landGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#2a3a5c"/>
+          <stop offset="55%" stop-color="#1e2842"/>
+          <stop offset="100%" stop-color="#141b2e"/>
+        </linearGradient>
+        <linearGradient id="landSheen" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#8fb4ff" stop-opacity=".35"/>
+          <stop offset="35%" stop-color="#8fb4ff" stop-opacity="0"/>
+        </linearGradient>
+        <radialGradient id="pinHalo" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="var(--spark)" stop-opacity=".55"/>
+          <stop offset="100%" stop-color="var(--spark)" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <g>${dots}</g>`;
+    landPaths.forEach(p=> svg += `<path class="map-land" d="${p}"/><path class="map-land-sheen" d="${p}"/>`);
+    mapPins.forEach((p,i)=>{
+      // measure-free label background: rough width estimate from label length
+      const labelW = p.t.length * 5.8 + 12;
+      const flip = p.x > w*0.62; // flip label to the left if pin sits near the right edge
+      const labelX = flip ? -(labelW - 4) : 10;
+      svg += `<g class="map-pin" data-i="${i}" transform="translate(${p.x},${p.y})">
+        <circle class="halo" r="16" fill="${pinColors[i]}" opacity=".35"/>
+        <circle class="ring" r="5" style="animation-delay:${(i*0.15).toFixed(2)}s"/>
+        <rect class="map-label-bg" x="${labelX}" y="-16" width="${labelW}" height="15" rx="4"></rect>
+        <text class="map-label" x="${flip ? -(labelW-8) : 14}" y="-5">${p.t}</text>
+        <circle class="core" r="5.5" fill="${pinColors[i]}"/>
+      </g>`;
+    });
+    svg += `</svg><div class="map-card" id="mapCard"></div>`;
+
+    // always-visible legend — the real content lives here, not behind hover
+    let legend = `<div class="map-legend">`;
+    mapPins.forEach((p,i)=>{
+      legend += `<div class="li"><span class="dot" style="background:${pinColors[i]}; color:${pinColors[i]};"></span>
+        <div><h5>${p.t}</h5><p>${p.d}</p></div></div>`;
+    });
+    legend += `</div>`;
+
+    wrap.innerHTML = `<div class="map-globe">${svg}</div>${legend}`;
+
+    // hover is a bonus enhancement only — content above never depends on it,
+    // and it's guarded so a broken/absent layout context can't misplace it
+    const card = wrap.querySelector('#mapCard');
+    const svgEl = wrap.querySelector('svg');
+    wrap.querySelectorAll('.map-pin').forEach(pin=>{
+      const info = mapPins[+pin.dataset.i];
+      function show(){
+        const ctm = svgEl.getScreenCTM();
+        if(!ctm) return; // no live layout context (e.g. static export) — skip safely
+        wrap.querySelectorAll('.map-pin').forEach(p=>p.classList.remove('active'));
+        pin.classList.add('active');
+        card.innerHTML = `<h4>${info.t}</h4><p>${info.d}</p>`;
+        const pt = svgEl.createSVGPoint(); pt.x = info.x; pt.y = info.y;
+        const screen = pt.matrixTransform(ctm);
+        const wrapRect = wrap.getBoundingClientRect();
+        let left = screen.x - wrapRect.left + 14;
+        let top = screen.y - wrapRect.top - 60;
+        if(left + 190 > wrapRect.width) left = screen.x - wrapRect.left - 204;
+        if(left < 0) left = 4;
+        card.style.left = left+'px'; card.style.top = Math.max(0,top)+'px';
+        card.classList.add('show');
+      }
+      pin.addEventListener('mouseenter', show);
+      pin.addEventListener('click', show);
+    });
+    wrap.addEventListener('mouseleave', ()=> card.classList.remove('show'));
+  }
+
+  /* ---------- Careers roadmap progressive unlock ---------- */
+  function playRoadmap(){
+    const steps = document.querySelectorAll('#roadmap .rm-step');
+    if(!steps.length) return;
+    steps.forEach(s=> s.classList.remove('unlocked'));
+    steps.forEach((s,i)=> setTimeout(()=> s.classList.add('unlocked'), 250 + i*160));
+  }
+
+  /* ---------- Confetti (Thank You) ---------- */
+  let confettiDone = false;
+  function fireConfetti(){
+    if(confettiDone) return; confettiDone = true;
+    const canvas = document.createElement('canvas');
+    canvas.id = 'confetti';
+    canvas.width = innerWidth; canvas.height = innerHeight;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    const colors = ['#5b8def','#f2a65a','#ff6f6f','#ffffff'];
+    const pieces = Array.from({length:140}, ()=>({
+      x: Math.random()*canvas.width, y: -20 - Math.random()*canvas.height*0.4,
+      r: 4+Math.random()*5, c: colors[Math.floor(Math.random()*colors.length)],
+      vy: 2+Math.random()*3, vx: (Math.random()-0.5)*2.4, rot: Math.random()*360, vr: (Math.random()-0.5)*8
+    }));
+    let frame=0;
+    function step(){
+      frame++;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p=>{
+        p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+        ctx.fillStyle = p.c; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);
+        ctx.restore();
+      });
+      if(frame<260) requestAnimationFrame(step);
+      else { canvas.style.transition='opacity .8s ease'; canvas.style.opacity='0'; setTimeout(()=>canvas.remove(),800); }
+    }
+    step();
+  }
+
+  /* ---------- Slide dispatch ---------- */
+  function onSlide(section, title){
+    initIcons();
+    runCountUp(section);
+    initAmbientParticles();
+    if(title==='Introduction') initTitleParticles();
+    if(title==='Evolution'){ initGrowthChart(); playTimelineSequence(section); }
+    if(title==='Tools') initLangChart();
+    if(title==='Applications'){ buildWorldMap(); initAdoptionChart(); }
+    if(title==='Lifecycle') buildLifecycle();
+    if(title==='Machine Learning') buildMlTree();
+    if(title==='Careers'){ initSkillsChart(); playRoadmap(); }
+    if(title==='Thank You') fireConfetti();
+    if(title!=='Lifecycle' && lcTimer){ clearInterval(lcTimer); lcTimer=null; }
+    if(title!=='Evolution' && tlTimers.length){ tlTimers.forEach(id=>clearTimeout(id)); tlTimers=[]; }
+  }
+
+  window.Keynote = { onSlide };
+
+  /* ---------- Card tilt + spotlight micro-interaction ---------- */
+  function initCardTilt(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.addEventListener('pointermove', (e)=>{
+      const card = e.target.closest && e.target.closest('.card');
+      document.querySelectorAll('.card.tilting').forEach(c=>{ if(c!==card) c.classList.remove('tilting'); });
+      if(!card) return;
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top) / r.height;
+      const tiltY = (px - 0.5) * 8;   // left/right -> rotateY
+      const tiltX = (0.5 - py) * 8;   // up/down -> rotateX
+      card.style.setProperty('--tiltX', tiltX.toFixed(2)+'deg');
+      card.style.setProperty('--tiltY', tiltY.toFixed(2)+'deg');
+      card.style.setProperty('--mx', (px*100).toFixed(1)+'%');
+      card.style.setProperty('--my', (py*100).toFixed(1)+'%');
+      card.classList.add('tilting');
+    }, {passive:true});
+    document.addEventListener('pointerleave', (e)=>{
+      const card = e.target.closest && e.target.closest('.card');
+      if(card){ card.style.setProperty('--tiltX','0deg'); card.style.setProperty('--tiltY','0deg'); }
+    }, true);
+  }
+
+  function kickoff(){
+    initIcons(); initCursor(); initRipple(); initCardTilt();
+    const active = document.querySelector('.slide.active');
+    if(active) onSlide(active, active.dataset.title);
+  }
+  document.addEventListener('DOMContentLoaded', kickoff);
+  if(document.readyState !== 'loading'){ kickoff(); }
+})();
+</script>
+</body>
+</html>
